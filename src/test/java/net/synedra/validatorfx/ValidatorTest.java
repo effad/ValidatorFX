@@ -62,7 +62,7 @@ public class ValidatorTest extends TestBase {
 		
 		robot.clickOn(".text-field");
 		robot.type(KeyCode.A, 1);
-		checkMessage(validator, Severity.ERROR, "Txt cntns vwlsx");
+		checkMessage(validator, Severity.ERROR, "Txt cntns vwls");
 
 		robot.type(KeyCode.A, 6);
 		checkMessage(validator, Severity.ERROR, "Too long", Severity.ERROR, "Txt cntns vwls");
