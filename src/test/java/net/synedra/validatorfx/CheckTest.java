@@ -1,9 +1,13 @@
 package net.synedra.validatorfx;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -11,6 +15,7 @@ import javafx.beans.property.StringProperty;
 /** CheckTest tests Check.
  * @author r.lichtenberger@synedra.com
  */
+@ExtendWith(ApplicationExtension.class)
 public class CheckTest {
 	
 	private static String WARNING = "This is a warning.";
@@ -21,16 +26,16 @@ public class CheckTest {
 			.withMethod(this::check1);		
 		c.recheck();
 		List<ValidationMessage> messages = c.getValidationResult().getMessages();
-		Assert.assertEquals(messages.size(), 1);
-		Assert.assertEquals(messages.get(0).getText(), WARNING);
-		Assert.assertEquals(messages.get(0).getSeverity(), Severity.WARNING);
+		assertEquals(1, messages.size());
+		assertEquals(WARNING, messages.get(0).getText());
+		assertEquals(Severity.WARNING, messages.get(0).getSeverity());
 	}
 	
 	private void check1(Check c) {
 		c.warn(WARNING);
 	}
 	
-//	@Test
+	@Test
 	public void testDependsOn() {
 		StringProperty text = new SimpleStringProperty("foo"); 
 		Check c = new Check()
@@ -38,16 +43,18 @@ public class CheckTest {
 			.dependsOn("content", text)
 			.install();
 		
+		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
+		
 		List<ValidationMessage> messages = c.getValidationResult().getMessages();
-		Assert.assertEquals(messages.size(), 1);
-		Assert.assertEquals(messages.get(0).getText(), "Must not be foo");
-		Assert.assertEquals(messages.get(0).getSeverity(), Severity.ERROR);
+		assertEquals(1, messages.size());
+		assertEquals("Must not be foo", messages.get(0).getText());
+		assertEquals(Severity.ERROR, messages.get(0).getSeverity());
 		
 		text.set("bar");
 		messages = c.getValidationResult().getMessages();
-		Assert.assertEquals(messages.size(), 1);
-		Assert.assertEquals(messages.get(0).getText(), "Must not be bar");
-		Assert.assertEquals(messages.get(0).getSeverity(), Severity.ERROR);		
+		assertEquals(1, messages.size());
+		assertEquals("Must not be bar", messages.get(0).getText());
+		assertEquals(Severity.ERROR, messages.get(0).getSeverity());
 	}
 	
 	private void check2(Check c) {

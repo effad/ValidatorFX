@@ -1,21 +1,24 @@
 package net.synedra.validatorfx;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 public class ValdationResultTest {
 
 	@Test
 	public void testSetup() {
 		ValidationResult result = new ValidationResult();
-		Assert.assertTrue(result.getMessages().isEmpty());
+		assertTrue(result.getMessages().isEmpty());
 		result.addWarning("warn");
-		Assert.assertFalse(result.getMessages().isEmpty());
+		assertFalse(result.getMessages().isEmpty());
 		result.addError("err");
-		Assert.assertEquals(result.getMessages().get(0).getSeverity(), Severity.WARNING);
-		Assert.assertEquals(result.getMessages().get(0).getText(), "warn");
-		Assert.assertEquals(result.getMessages().get(1).getSeverity(), Severity.ERROR);
-		Assert.assertEquals(result.getMessages().get(1).getText(), "err");
+		assertEquals(Severity.WARNING, result.getMessages().get(0).getSeverity());
+		assertEquals("warn", result.getMessages().get(0).getText());
+		assertEquals(Severity.ERROR, result.getMessages().get(1).getSeverity());
+		assertEquals("err", result.getMessages().get(1).getText());
 	}
 	
 	@Test
@@ -27,10 +30,10 @@ public class ValdationResultTest {
 		ValidationResult result = new ValidationResult();
 		result.addAll(result1.getMessages());
 		result.addAll(result2.getMessages());
-		Assert.assertEquals(result.getMessages().get(0).getSeverity(), Severity.WARNING);
-		Assert.assertEquals(result.getMessages().get(0).getText(), "warn");
-		Assert.assertEquals(result.getMessages().get(1).getSeverity(), Severity.ERROR);
-		Assert.assertEquals(result.getMessages().get(1).getText(), "err");
+		assertEquals(Severity.WARNING, result.getMessages().get(0).getSeverity());
+		assertEquals("warn", result.getMessages().get(0).getText());
+		assertEquals(Severity.ERROR, result.getMessages().get(1).getSeverity());
+		assertEquals("err", result.getMessages().get(1).getText());
 	}
 	
 }
