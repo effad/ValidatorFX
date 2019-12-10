@@ -35,7 +35,7 @@ test {
     useTestNG()
 }
 
-version = '0.9.9.1'
+version = '0.1.1'
 
 jar {
     manifest {
