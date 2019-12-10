@@ -3,6 +3,9 @@ package net.synedra.validatorfx;
 import java.util.ArrayList;
 import java.util.List;
 
+/** A validation result consists of 0 ... n validation messages.
+ * @author r.lichtenberger@synedra.com
+ */
 public class ValidationResult {
 	
 	private List<ValidationMessage> messages = new ArrayList<>();

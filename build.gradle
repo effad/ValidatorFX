@@ -8,43 +8,108 @@
 
 
 plugins {
-    // Apply the java-library plugin to add support for Java Library
-    id 'java-library'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+	// Apply the java-library plugin to add support for Java Library
+	id 'java-library'
+	id 'org.openjfx.javafxplugin' version '0.0.8'
+	id 'maven-publish'
+	id 'signing'
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+	// Use jcenter for resolving dependencies.
+	// You can declare any Maven/Ivy/file repository here.
+	jcenter()
 }
 
 dependencies {
-	implementation 'org.controlsfx:controlsfx:11.0.1'    
+	implementation 'org.controlsfx:controlsfx:11.0.1'	
 
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-    testCompile "org.testfx:testfx-junit5:4.0.16-alpha"
+	testCompile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+	testCompile "org.testfx:testfx-junit5:4.0.16-alpha"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-    
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+	
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
 }
 
 test {
-    // Use TestNG for unit tests
-    useTestNG()
+	// Use TestNG for unit tests
+	useTestNG()
 }
 
 version = '0.1.1'
 
 jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                   'Implementation-Version': project.version)
-    }
+	manifest {
+		attributes('Implementation-Title': project.name,
+				   'Implementation-Version': project.version)
+	}
 }
 
 javafx {
-        version = "13"
-        modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.base' ]
+		version = "13"
+		modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.base' ]
 }
+
+
+
+group = 'net.synedra'
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			groupId = 'net.synedra'
+			artifactId = 'validatorfx'
+			from components.java
+			
+			artifact sourcesJar
+			artifact javadocJar
+			pom {
+				name = 'ValidatorFX'
+				description = 'A form validation library for JavaFX'
+				url = 'https://github.com/effad/ValidatorFX'
+				licenses {
+					license {
+						name = 'BSD 3-Clause License'
+						url = 'https://raw.githubusercontent.com/effad/ValidatorFX/master/LICENSE'
+					}
+				}
+				developers {
+					developer {
+						id = 'effad'
+						name = 'Robert Lichtenberger'
+						email = 'r.lichtenberger@synedra.com'
+					}
+				}
+				scm {
+					connection = 'scm:git:https://github.com/effad/ValidatorFX.git'
+					developerConnection = 'scm:git:ssh://git@github.com:effad/ValidatorFX.git'
+					url = 'https://github.com/effad/ValidatorFX'
+				}
+			}			
+		}
+	}
+
+	repositories {
+		maven {
+			name = 'myRepo'
+			url = "file://${buildDir}/repo"
+		}
+	}
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
