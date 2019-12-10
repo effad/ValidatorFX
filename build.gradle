@@ -33,8 +33,7 @@ dependencies {
 }
 
 test {
-	// Use TestNG for unit tests
-	useTestNG()
+    useJUnitPlatform()
 }
 
 version = '0.1.1'
