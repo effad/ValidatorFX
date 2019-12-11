@@ -1,6 +1,8 @@
 package net.synedra.validatorfx;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -59,25 +61,35 @@ public class ValidatorTest extends TestBase {
 		
 		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
 		assertEquals(0, validator.getValidationResult().getMessages().size());
+		assertFalse(validator.containsWarnings());
+		assertFalse(validator.containsErrors());
 		
 		robot.clickOn(".text-field");
 		robot.type(KeyCode.A, 1);
 		checkMessage(validator, Severity.ERROR, "Txt cntns vwls");
+		assertFalse(validator.containsWarnings());
+		assertTrue(validator.containsErrors());
 
 		robot.type(KeyCode.A, 6);
-		checkMessage(validator, Severity.ERROR, "Too long", Severity.ERROR, "Txt cntns vwls");
+		checkMessage(validator, Severity.WARNING, "Too long", Severity.ERROR, "Txt cntns vwls");
+		assertTrue(validator.containsWarnings());
+		assertTrue(validator.containsErrors());
 		
 		validator.remove(c1);
 		checkMessage(validator, Severity.ERROR, "Txt cntns vwls");
+		assertFalse(validator.containsWarnings());
+		assertTrue(validator.containsErrors());
 		
 		validator.remove(c2);
 		assertEquals(0, validator.getValidationResult().getMessages().size());		
+		assertFalse(validator.containsWarnings());
+		assertFalse(validator.containsErrors());
 	}
 	
 	private void maxSize(Check c) {
 		String text = c.get("content");
 		if (text.length() > 5) {
-			c.error("Too long");
+			c.warn("Too long");
 		}
 	}		
 	
