@@ -23,7 +23,7 @@ import javafx.scene.Node;
 public class Check {
 	
 	private Map<String, ObservableValue<? extends Object>> dependencies = new HashMap<>(1);
-	private Consumer<Check> checkMethod;
+	private Consumer<Context> checkMethod;
     private ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>();
 	private ValidationResult nextValidationResult = new ValidationResult();
 	private List<Node> targets = new ArrayList<>(1);
@@ -31,13 +31,42 @@ public class Check {
 	private Function<ValidationMessage, Decoration> decorationFactory;
 	private ChangeListener<? super Object> dependencyListener;
 	
+	public class Context {
+		
+		private Context() { }
+		
+		/** Get the current value of a dependency.
+		 * @param <T> The type the value should be casted into
+		 * @param key The key the dependency has been given
+		 * @return The current value of the given depency
+		 */
+		@SuppressWarnings("unchecked")
+		public <T> T get(String key) {
+			return (T) dependencies.get(key).getValue();
+		}
+
+		/** Emit a warning.
+		 * @param message The text to be presented to the user as warning message.
+		 */
+		public void warn(String message) {
+			nextValidationResult.addWarning(message);
+		}
+		
+		/** Emit an error.
+		 * @param message The text to be presented to the user as error message.
+		 */
+		public void error(String message) {
+			nextValidationResult.addError(message);
+		}			
+	}
+	
 	public Check() {
 		validationResultProperty.set(new ValidationResult());
 		decorationFactory = DefaultDecoration.getFactory();
 		dependencyListener = (obs, oldv, newv) -> recheck();
 	}
 		
-	public Check withMethod(Consumer<Check> checkMethod) {
+	public Check withMethod(Consumer<Context> checkMethod) {
 		this.checkMethod = checkMethod;
 		return this;
 	}
@@ -64,14 +93,14 @@ public class Check {
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
 			dependency.addListener(dependencyListener);
 		}
-		Platform.runLater(() -> recheck());	// to circumvent problems with decoration pane vs. dialog
+		Platform.runLater(this::recheck);	// to circumvent problems with decoration pane vs. dialog
 		return this;
 	}
 	
 	/** Evaluate all dependencies and apply decorations of this check. You should not normally need to call this method directly. */
 	public void recheck() {
 		nextValidationResult = new ValidationResult();
-		checkMethod.accept(this);
+		checkMethod.accept(new Context());
 		for (Node target : targets) {
 			for (Decoration decoration : decorations) {
 				Decorator.removeDecoration(target, decoration);				
@@ -104,22 +133,4 @@ public class Check {
 	    return validationResultProperty.getReadOnlyProperty();
 	}
 		
-	/** Get the current value of a dependency.
-	 * @param <T> The type the value should be casted into
-	 * @param key The key the dependency has been given
-	 * @return The current value of the given depency
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T get(String key) {
-		return (T) dependencies.get(key).getValue();
-	}
-
-	// TODO :: move this method to a separate class to be passed into check methods
-	public void warn(String message) {
-		nextValidationResult.addWarning(message);
-	}
-	
-	public void error(String message) {
-		nextValidationResult.addError(message);
-	}	
 }

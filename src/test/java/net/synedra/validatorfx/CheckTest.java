@@ -45,7 +45,7 @@ public class CheckTest {
 		checkMessage(c, Severity.WARNING, WARNING);
 	}
 	
-	private void check1(Check c) {
+	private void check1(Check.Context c) {
 		c.warn(WARNING);
 	}
 	
@@ -65,7 +65,7 @@ public class CheckTest {
 		checkMessage(c, Severity.ERROR, "Must not be bar");
 	}
 	
-	private void check2(Check c) {
+	private void check2(Check.Context c) {
 		c.error("Must not be " + c.get("content"));
 	}
 	
@@ -88,7 +88,7 @@ public class CheckTest {
 		checkMessage(c, Severity.ERROR, "Too long");
 	}
 	
-	private void check3(Check c) {
+	private void check3(Check.Context c) {
 		String text = c.get("content");
 		if (text.length() > 5) {
 			c.error("Too long");

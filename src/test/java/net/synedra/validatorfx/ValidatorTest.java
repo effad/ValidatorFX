@@ -116,14 +116,14 @@ public class ValidatorTest extends TestBase {
 		assertTrue(validator.containsErrors());		
 	}
 	
-	private void maxSize(Check c) {
+	private void maxSize(Check.Context c) {
 		String text = c.get("content");
 		if (text.length() > 5) {
 			c.warn("Too long");
 		}
 	}		
 	
-	private void noVowels(Check c) {
+	private void noVowels(Check.Context c) {
 		String text = c.get("content");
 		if (text.matches(".*[aeiouAEIOU].*")) {
 			c.error("Txt cntns vwls");

@@ -33,6 +33,8 @@ public class DefaultDecoration {
     
     private static Function<ValidationMessage, Decoration> factory;
     
+    private DefaultDecoration() { }
+    
     public static Function<ValidationMessage, Decoration> getFactory() {
     	if (factory == null) {
     		factory = DefaultDecoration::createGraphicDecoration;
