@@ -82,4 +82,8 @@ This line tells ValidatorFX to decorate the text field itself. You can call deco
       .install();
 The check is activated by this line.
 
+Here's a screenshot of the example in action:
+
+![Screenshot of MinimalExample](images/MinimalDemo.png)
+
 To see more features and Details have a look at [ValidatorFXDemo.java](src/test/java/net/synedra/validatorfx/demo/ValidatorFXDemo.java)
