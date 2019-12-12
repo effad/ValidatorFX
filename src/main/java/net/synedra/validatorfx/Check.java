@@ -30,10 +30,11 @@ public class Check {
 	private ValidationResult nextValidationResult = new ValidationResult();
 	private List<Node> targets = new ArrayList<>(1);
 	private List<Decoration> decorations = new ArrayList<>();
-	private Function<ValidationMessage, Decoration> decorationFactory = DefaultDecoration::createGraphicDecoration;
+	private Function<ValidationMessage, Decoration> decorationFactory;
 	
 	public Check() {
 		validationResultProperty.set(new ValidationResult());
+		decorationFactory = DefaultDecoration.getFactory();
 	}
 		
 	public Check withMethod(Consumer<Check> checkMethod) {

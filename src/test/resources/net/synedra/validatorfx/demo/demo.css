@@ -1,0 +1,8 @@
+.validatorfx-error {
+	-fx-text-fill: rgb(164, 0, 0);	
+}
+
+.validatorfx-warning {
+	-fx-text-fill: rgb(196, 160, 0);	
+}
+

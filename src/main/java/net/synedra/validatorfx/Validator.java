@@ -18,7 +18,7 @@ public class Validator {
     private ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>(new ValidationResult());
     private ReadOnlyBooleanWrapper containsWarningsProperty = new ReadOnlyBooleanWrapper();
     private ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
-	
+    
     /** Create a check that lives within this checker's domain.
      * @return A check object whose dependsOn, decorates, etc. methods can be called
      */

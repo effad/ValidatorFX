@@ -1,7 +1,10 @@
 package net.synedra.validatorfx;
 
+import java.util.function.Function;
+
 import org.controlsfx.control.decoration.Decoration;
 import org.controlsfx.control.decoration.GraphicDecoration;
+import org.controlsfx.control.decoration.StyleClassDecoration;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 
 import javafx.geometry.Pos;
@@ -27,7 +30,24 @@ public class DefaultDecoration {
 
     private static final String WARNING_TOOLTIP_EFFECT = POPUP_SHADOW_EFFECT + TOOLTIP_COMMON_EFFECTS
             + "-fx-background-color: FFFFCC; -fx-text-fill: CC9900; -fx-border-color: CC9900;";
+    
+    private static Function<ValidationMessage, Decoration> factory;
+    
+    public static Function<ValidationMessage, Decoration> getFactory() {
+    	if (factory == null) {
+    		factory = DefaultDecoration::createGraphicDecoration;
+    	}
+    	return factory;
+    }
+    
+    public static void setFactory(Function<ValidationMessage, Decoration> factory) {
+    	DefaultDecoration.factory = factory;
+    }
 
+    public static Decoration createStyleClassDecoration(ValidationMessage message) {
+    	return new StyleClassDecoration("validatorfx-" + message.getSeverity().toString().toLowerCase());
+    }
+    
     public static Decoration createGraphicDecoration(ValidationMessage message) {
     	return new GraphicDecoration(createDecorationNode(message),Pos.TOP_LEFT);
     }

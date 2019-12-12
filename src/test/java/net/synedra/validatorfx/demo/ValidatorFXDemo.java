@@ -1,5 +1,6 @@
 package net.synedra.validatorfx.demo;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import javafx.application.Application;
@@ -20,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import net.synedra.validatorfx.DefaultDecoration;
 import net.synedra.validatorfx.Validator;
 
 /** ValidatorFXDemo demonstrates the features of ValidatorFX.
@@ -101,8 +103,9 @@ public class ValidatorFXDemo extends Application {
 		grid.add(bottomBox, 1, 6);
 		
 		Scene scene = new Scene(grid);
-		primaryStage.setScene(scene);
+		scene.getStylesheets().add(getClass().getResource("demo.css").toExternalForm());
 		
+		primaryStage.setScene(scene);		
 		primaryStage.show();		
 	}
 
@@ -133,6 +136,9 @@ public class ValidatorFXDemo extends Application {
 	}
 
 	public static void main(String[] args) {
+		if (Arrays.asList(args).contains("-css")) {
+			DefaultDecoration.setFactory(DefaultDecoration::createStyleClassDecoration);
+		}
 		launch();
 	}
 }
