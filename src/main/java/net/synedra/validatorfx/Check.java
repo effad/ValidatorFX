@@ -11,10 +11,9 @@ import org.controlsfx.control.decoration.Decoration;
 import org.controlsfx.control.decoration.Decorator;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
@@ -24,17 +23,18 @@ import javafx.scene.Node;
 public class Check {
 	
 	private Map<String, ObservableValue<? extends Object>> dependencies = new HashMap<>(1);
-	private ObjectBinding<Map<String, Object>> binding;
 	private Consumer<Check> checkMethod;
     private ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>();
 	private ValidationResult nextValidationResult = new ValidationResult();
 	private List<Node> targets = new ArrayList<>(1);
 	private List<Decoration> decorations = new ArrayList<>();
 	private Function<ValidationMessage, Decoration> decorationFactory;
+	private ChangeListener<? super Object> dependencyListener;
 	
 	public Check() {
 		validationResultProperty.set(new ValidationResult());
 		decorationFactory = DefaultDecoration.getFactory();
+		dependencyListener = (obs, oldv, newv) -> recheck();
 	}
 		
 	public Check withMethod(Consumer<Check> checkMethod) {
@@ -57,14 +57,18 @@ public class Check {
 		return this;
 	}
 	
-	/** Initializes and installs the check. This method must be called last. */
-	public Check install() {
-		binding = Bindings.createObjectBinding(this::createValueMap, dependencies.values().toArray(new ObservableValue[dependencies.size()]));
-		binding.addListener((obs, oldv, newv) -> recheck());
+	/** Sets this check to be immediately evaluated if one of its dependencies changes. 
+	 * This method must be called last. 
+	 */
+	public Check immediate() {
+		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
+			dependency.addListener(dependencyListener);
+		}
 		Platform.runLater(() -> recheck());	// to circumvent problems with decoration pane vs. dialog
 		return this;
 	}
 	
+	/** Evaluate all dependencies and apply decorations of this check. You should not normally need to call this method directly. */
 	public void recheck() {
 		nextValidationResult = new ValidationResult();
 		checkMethod.accept(this);
@@ -109,18 +113,13 @@ public class Check {
 	public <T> T get(String key) {
 		return (T) dependencies.get(key).getValue();
 	}
-	
+
+	// TODO :: move this method to a separate class to be passed into check methods
 	public void warn(String message) {
 		nextValidationResult.addWarning(message);
 	}
 	
 	public void error(String message) {
 		nextValidationResult.addError(message);
-	}
-	
-	private Map<String, Object> createValueMap() {
-		Map<String, Object> valueMap = new HashMap<>(dependencies.size());
-		dependencies.forEach((key, dependency) -> valueMap.put(key, dependency.getValue()));
-		return valueMap;
 	}	
 }

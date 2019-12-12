@@ -50,16 +50,16 @@ public class ValidatorTest extends TestBase {
 			.withMethod(this::maxSize)
 			.dependsOn("content", textfield.textProperty())
 			.decorates(textfield)
-			.install()
+			.immediate()
 		;
 		Check c2 = validator.createCheck()
 			.withMethod(this::noVowels)
 			.dependsOn("content", textfield.textProperty())
 			.decorates(textfield)
-			.install()
+			.immediate()
 		;
 		
-		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait 
 		assertEquals(0, validator.getValidationResult().getMessages().size());
 		assertFalse(validator.containsWarnings());
 		assertFalse(validator.containsErrors());
@@ -84,6 +84,36 @@ public class ValidatorTest extends TestBase {
 		assertEquals(0, validator.getValidationResult().getMessages().size());		
 		assertFalse(validator.containsWarnings());
 		assertFalse(validator.containsErrors());
+	}
+	
+	@Test
+	public void testValidateOnSubmit(FxRobot robot) {
+		TextField textfield = new TextField();
+		fx(() -> root.getChildren().add(textfield));
+		
+		Validator validator = new Validator();
+		validator.createCheck()
+			.withMethod(this::noVowels)
+			.dependsOn("content", textfield.textProperty())
+			.decorates(textfield)
+		;
+		
+		assertEquals(0, validator.getValidationResult().getMessages().size());
+		assertFalse(validator.containsWarnings());
+		assertFalse(validator.containsErrors());
+		
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 1);
+		// although we violate the check, nothing should happen until ...
+		assertEquals(0, validator.getValidationResult().getMessages().size());
+		assertFalse(validator.containsWarnings());
+		assertFalse(validator.containsErrors());
+
+		// ... we validate explicitly
+		assertFalse(fx(validator::validate));
+		checkMessage(validator, Severity.ERROR, "Txt cntns vwls");
+		assertFalse(validator.containsWarnings());
+		assertTrue(validator.containsErrors());		
 	}
 	
 	private void maxSize(Check c) {

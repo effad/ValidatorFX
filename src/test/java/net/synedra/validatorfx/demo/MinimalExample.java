@@ -26,7 +26,7 @@ public class MinimalExample extends Application {
 				}
 			})
 			.decorates(userTextField)
-			.install();
+			.immediate();
 		;
 		
 		GridPane grid = createGrid();

@@ -1,20 +1,18 @@
 package net.synedra.validatorfx.demo;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -24,18 +22,16 @@ import javafx.stage.Stage;
 import net.synedra.validatorfx.DefaultDecoration;
 import net.synedra.validatorfx.Validator;
 
-/** ValidatorFXDemo demonstrates the features of ValidatorFX.
+/** ValidateOnSubmit demonstrates validation on submit.
  * @author r.lichtenberger@synedra.com
  */
-public class ValidatorFXDemo extends Application {
+public class ValidateOnSubmit extends Application {
 
 	private Validator validator = new Validator();
-	private StringBinding problemsText;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("ValidatorFX Demo");
-		
+		primaryStage.setTitle("Validate on submit demo");
 		
 		GridPane grid = createGrid();
 		
@@ -46,11 +42,9 @@ public class ValidatorFXDemo extends Application {
 		
 		PasswordField password = new PasswordField();
 		PasswordField passwordConfirmation = new PasswordField();
-		
-		TextArea problems = createProblemOutput();
-		
+				
 		Button signUp = new Button("Sign up");
-		signUp.disableProperty().bind(validator.containsErrorsProperty());
+		signUp.setOnAction(this::signUpClicked);
 		HBox bottomBox = new HBox(10);
 		bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
 		bottomBox.getChildren().add(signUp);
@@ -64,7 +58,6 @@ public class ValidatorFXDemo extends Application {
 			})
 			.dependsOn("username", userTextField.textProperty())
 			.decorates(userTextField)
-			.immediate();
 		;
 		
 		validator.createCheck()
@@ -77,19 +70,6 @@ public class ValidatorFXDemo extends Application {
 			.dependsOn("passwordConfirmation", passwordConfirmation.textProperty())
 			.decorates(password)
 			.decorates(passwordConfirmation)
-			.immediate()
-		;
-		
-		validator.createCheck()
-			.withMethod(c -> {
-				String pwd = c.get("password");
-				if (pwd.length() < 8) {
-					c.warn("Password should be at least 8 characters long.");
-				}
-			})
-			.dependsOn("password", password.textProperty())
-			.decorates(signUp)
-			.immediate()
 		;
 		
 		grid.add(sceneTitle, 0, 0, 2, 1);
@@ -99,7 +79,6 @@ public class ValidatorFXDemo extends Application {
 		grid.add(password, 1, 2);
 		grid.add(new Label("Password confirmation:"), 0, 3);
 		grid.add(passwordConfirmation, 1, 3);
-		grid.add(problems, 0, 4, 2, 1);
 		grid.add(bottomBox, 1, 6);
 		
 		Scene scene = new Scene(grid);
@@ -109,23 +88,6 @@ public class ValidatorFXDemo extends Application {
 		primaryStage.show();		
 	}
 
-	private TextArea createProblemOutput() {
-		TextArea problems = new TextArea();
-		problems.setEditable(false);
-		problems.setPrefHeight(60);
-		problems.setBackground(Background.EMPTY);
-		problems.setFocusTraversable(false);
-		problemsText = Bindings.createStringBinding(this::getProblemText, validator.validationResultProperty());
-		problems.textProperty().bind(problemsText);
-		return problems;
-	}
-	
-	private String getProblemText() {
-		return validator.validationResultProperty().get().getMessages().stream()
-			.map(msg -> msg.getSeverity().toString() + ": " + msg.getText())
-			.collect(Collectors.joining("\n"));
-	}
-
 	private GridPane createGrid() {
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -133,6 +95,17 @@ public class ValidatorFXDemo extends Application {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		return grid;
+	}
+	
+	private void signUpClicked(ActionEvent e) {
+		if (validator.validate()) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Sign up complete");
+			alert.setHeaderText(null);
+			alert.setContentText("You successfully signed up");
+
+			alert.showAndWait();		
+		}
 	}
 
 	public static void main(String[] args) {

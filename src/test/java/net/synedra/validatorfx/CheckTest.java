@@ -55,7 +55,7 @@ public class CheckTest {
 		Check c = new Check()
 			.withMethod(this::check2)
 			.dependsOn("content", text)
-			.install();
+			.immediate();
 		
 		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
 		
@@ -75,7 +75,7 @@ public class CheckTest {
 			.withMethod(this::check3)
 			.dependsOn("content", textfield.textProperty())
 			.decorates(textfield)
-			.install()
+			.immediate()
 		;
 		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
 		assertEquals(0, c.getValidationResult().getMessages().size());

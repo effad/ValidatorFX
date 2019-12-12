@@ -37,6 +37,9 @@ public class Validator {
 		check.validationResultProperty().addListener(listener);
 	}
 	
+	/** Removes a check from this validator.
+	 * @param check The check to remove from this validator.
+	 */
 	public void remove(Check check) {
 		ChangeListener<ValidationResult> listener = checks.remove(check);
 		if (listener != null) {
@@ -59,6 +62,7 @@ public class Validator {
 	    return validationResultProperty.getReadOnlyProperty();
 	}
 	
+	/** A read-only boolean property indicating whether any of the checks of this validator emitted a warning. */
 	public ReadOnlyBooleanProperty containsWarningsProperty() {
 		return containsWarningsProperty.getReadOnlyProperty();
 	}
@@ -67,12 +71,23 @@ public class Validator {
 		return containsWarningsProperty().get();
 	}
 	
+	/** A read-only boolean property indicating whether any of the checks of this validator emitted an error. */
 	public ReadOnlyBooleanProperty containsErrorsProperty() {
 		return containsErrorsProperty.getReadOnlyProperty();
 	}
 	
 	public boolean containsErrors() {
 		return containsErrorsProperty().get();
+	}
+	
+	/** Run all checks (decorating nodes if appropriate)
+	 * @return true if no errors were found, false otherwise
+	 */
+	public boolean validate() {
+		for (Check check : checks.keySet()) {
+			check.recheck();
+		}
+		return ! containsErrors();
 	}
 
 	private void refreshProperties() {
