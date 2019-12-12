@@ -40,7 +40,7 @@ Heres a minimal complete example of how ValidatorFX is used:
             }
           })
           .decorates(userTextField)
-          .install();
+          .immediate();
         ;
 
         GridPane grid = createGrid();
@@ -83,11 +83,11 @@ This defines the check to be executed. Note how the dependency declared above ca
       .decorates(userTextField)
 This line tells ValidatorFX to decorate the text field itself. You can call decorates multiple times if you want multiple nodes to be decorated.      
       
-      .install();
-The check is activated by this line.
+      .immediate();
+The check is declared immediate by this line which means it will be evaluated constantly and `userTextField` will be decorated as soon as the check condition changes. Without this line you can validate on submit.
 
 Here's a screenshot of the example in action:
 
 ![Screenshot of MinimalExample](images/MinimalDemo.png)
 
-To see more features and Details have a look at [ValidatorFXDemo.java](src/test/java/net/synedra/validatorfx/demo/ValidatorFXDemo.java)
+To see more features and Details have a look at [ValidatorFXDemo.java](src/test/java/net/synedra/validatorfx/demo/ValidatorFXDemo.java) and the other files in the demo folder.
