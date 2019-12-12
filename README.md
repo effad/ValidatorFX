@@ -1,10 +1,14 @@
 # ValidatorFX
+
+## Introduction
 ValidatorFX is a validation library for JavaFX. It is inspired (and in parts based on) [ControlsFX](https://github.com/controlsfx/controlsfx) but tries to overcome its shortcomings:
 * Validations based on arbitrary observable values (not just the value of a control)
 * Validations can decorate an arbitrary number of nodes (not just the one control)
 * Validations can decorate any node (not just Control subtypes)
 
 The central class of ValidatorFX is Validator which contains a number of Checks. As a rule a form will have one Validator object and multiple Checks.
+
+## Example
 
 Heres a minimal complete example of how ValidatorFX is used:
 
