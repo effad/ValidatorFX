@@ -9,4 +9,4 @@ build
 /.project
 bin
 .settings
-
+*~
