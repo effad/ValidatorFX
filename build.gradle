@@ -6,7 +6,6 @@
  * User Manual available at https://docs.gradle.org/6.0.1/userguide/java_library_plugin.html
  */
 
-
 plugins {
 	// Apply the java-library plugin to add support for Java Library
 	id 'java-library'
@@ -14,6 +13,9 @@ plugins {
 	id 'maven-publish'
 	id 'signing'
 }
+
+version = '0.1.2'
+
 
 repositories {
 	// Use jcenter for resolving dependencies.
@@ -38,7 +40,6 @@ test {
     jvmArgs '-Djava.awt.headless=true', '-Dtestfx.robot=glass', '-Dtestfx.headless=true', '-Dprism.order=sw'
 }
 
-version = '0.1.1'
 
 jar {
 	manifest {
