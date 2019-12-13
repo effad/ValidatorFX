@@ -1,5 +1,11 @@
 # ValidatorFX
 
+Form validation made easy.
+
+[![Actions Status](https://github.com/effad/ValidatorFX/workflows/Test/badge.svg)](https://github.com/effad/ValidatorFX/actions)
+[![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+
 ## Introduction
 ValidatorFX is a validation library for JavaFX. It is inspired (and in parts based on) [ControlsFX](https://github.com/controlsfx/controlsfx) but tries to overcome its shortcomings:
 * Validations based on arbitrary observable values (not just the value of a control)
