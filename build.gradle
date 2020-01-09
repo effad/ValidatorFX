@@ -67,14 +67,6 @@ task javadocJar(type: Jar) {
 	from javadoc.destinationDir
 }
 
-// if gradle.properties does not contain these, we still want to be able to work with build.gradle
-if (!hasProperty("ossrhUsername")) {
-	ossrhUsername = "";
-}
-if (!hasProperty("ossrhPassword")) {
-	ossrhPassword = "";
-}
-
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
