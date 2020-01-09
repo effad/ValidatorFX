@@ -15,6 +15,15 @@ ValidatorFX is a validation library for JavaFX. It is inspired (and in parts bas
 
 The central class of ValidatorFX is Validator which contains a number of Checks. As a rule a form will have one Validator object and multiple Checks.
 
+## Maven Coordinates
+```xml
+<dependency>
+   <groupId>net.synedra</groupId>
+   <artifactId>validatorfx</artifactId>
+   <version>0.1.3</version>
+</dependency>
+```
+
 ## Example
 
 Heres a minimal complete example of how ValidatorFX is used:
