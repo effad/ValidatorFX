@@ -108,6 +108,16 @@ publishing {
 			name = 'myRepo'
 			url = "file://${buildDir}/repo"
 		}
+		maven {
+			name = 'ossrh'
+			def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+			def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			credentials {
+				username = ossrhUsername
+				password = ossrhPassword
+			}
+		}
 	}
 }
 
