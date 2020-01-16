@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.controlsfx.control.decoration.Decoration;
-import org.controlsfx.control.decoration.Decorator;
-
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -103,7 +100,7 @@ public class Check {
 		checkMethod.accept(new Context());
 		for (Node target : targets) {
 			for (Decoration decoration : decorations) {
-				Decorator.removeDecoration(target, decoration);				
+				decoration.remove(target);				
 			}
 		}
 		decorations.clear();
@@ -111,7 +108,7 @@ public class Check {
 			for (ValidationMessage validationMessage : nextValidationResult.getMessages()) {
 				Decoration decoration = decorationFactory.apply(validationMessage);
 				decorations.add(decoration);
-				Decorator.addDecoration(target, decoration);				
+				decoration.add(target);				
 			}
 		}
 		if (!nextValidationResult.getMessages().equals(getValidationResult().getMessages())) {
