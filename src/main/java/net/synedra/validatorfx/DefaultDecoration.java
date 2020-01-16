@@ -49,8 +49,7 @@ public class DefaultDecoration {
 	}
 
 	public static Decoration createGraphicDecoration(ValidationMessage message) {
-//    	return new GraphicDecoration(createDecorationNode(message),Pos.TOP_LEFT);
-		return null;
+		return new GraphicDecoration(createDecorationNode(message),Pos.TOP_LEFT);
 	}
 
 	private static Node createDecorationNode(ValidationMessage message) {
