@@ -24,8 +24,6 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.controlsfx:controlsfx:11.0.1'	
-
 	testCompile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
 	testCompile "org.testfx:testfx-junit5:4.0.16-alpha"
     testCompile "org.testfx:openjfx-monocle:jdk-12.0.1+2" 
