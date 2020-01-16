@@ -19,8 +19,8 @@ import javafx.scene.image.ImageView;
  */
 public class DefaultDecoration {
 	
-    private static final Image ERROR_IMAGE = new Image(GraphicValidationDecoration.class.getResource("/impl/org/controlsfx/control/validation/decoration-error.png").toExternalForm()); 
-    private static final Image WARNING_IMAGE = new Image(GraphicValidationDecoration.class.getResource("/impl/org/controlsfx/control/validation/decoration-warning.png").toExternalForm()); 
+    private static final Image ERROR_IMAGE = new Image(GraphicValidationDecoration.class.getResource("/net/synedra/validatorfx/decoration-error.png").toExternalForm()); 
+    private static final Image WARNING_IMAGE = new Image(GraphicValidationDecoration.class.getResource("/net/synedra/validatorfx/decoration-warning.png").toExternalForm()); 
 
     private static final String POPUP_SHADOW_EFFECT = "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 5);"; 
     private static final String TOOLTIP_COMMON_EFFECTS = "-fx-font-weight: bold; -fx-padding: 5; -fx-border-width:1;"; 
