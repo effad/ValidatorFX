@@ -3,12 +3,15 @@ package net.synedra.validatorfx;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -129,6 +132,22 @@ public class GraphicDecorationTest extends TestBase {
 		// We must still only have one decoration pane
 		assertEquals(1, countDecorationStackPanes(target));
 	}
+	
+	@Test
+	public void testNonSceneNode(FxRobot robot) {
+		HBox hbox = new HBox();
+		fx(() -> {
+			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
+			decoration.add(hbox);
+		});
+		assertEquals(0, countDecorationStackPanes(hbox));
+		assertFalse(hasDecorationNode(robot));
+		fx(() -> {
+			root.getChildren().add(hbox);
+		});
+		assertEquals(1, countDecorationStackPanes(hbox));
+		assertTrue(hasDecorationNode(robot));
+	}
 
 	private int countDecorationStackPanes(Node node) {
 		int count = 0;
@@ -140,4 +159,10 @@ public class GraphicDecorationTest extends TestBase {
 		}
 		return count;
 	}
+	
+	private boolean hasDecorationNode(FxRobot robot) {
+		return ! robot.lookup(candidate -> candidate == decorationNode)
+				.queryAll().isEmpty();
+	}
+	
 }

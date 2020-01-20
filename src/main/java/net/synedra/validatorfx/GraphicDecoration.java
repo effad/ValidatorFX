@@ -5,6 +5,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 
 /** GraphicDecoration provides decoration of nodes by overlaying them with another node.
  * @author r.lichtenberger@synedra.com
@@ -18,6 +19,7 @@ public class GraphicDecoration implements Decoration {
     private final double yOffset;
 	
     private final ChangeListener<Boolean> targetNeedsLayoutListener;
+    private ChangeListener<Scene> sceneChangedListener;
     private GraphicDecorationStackPane stack;
     
 	/** Create GraphicDecoration that will be overlayed in the top-left corner
@@ -53,34 +55,58 @@ public class GraphicDecoration implements Decoration {
 	@Override
 	public void add(Node target) {
 		this.target = target;
-		ensureStack(target);
-		stack.getChildren().add(decorationNode);
-		layoutGraphic();		
+		withStack(() -> {
+			setListener();
+			stack.getChildren().add(decorationNode);
+			layoutGraphic();
+		});
 	}
 
 
 	@Override
 	public void remove(Node target) {
-        stack.getChildren().remove(decorationNode);
-        stack.needsLayoutProperty().removeListener(targetNeedsLayoutListener);
-        this.target = null;
+		if (stack != null) {
+			stack.getChildren().remove(decorationNode);
+			stack.needsLayoutProperty().removeListener(targetNeedsLayoutListener);
+			this.target = null;
+		}
 	}
 	
-	private void ensureStack(Node target) {
+	private void withStack(Runnable code) {
 		Node parent = target.getParent();
 		while (parent != null && !(parent instanceof GraphicDecorationStackPane)) {
 			parent = parent.getParent();			
 		}
 		if (parent == null) {
-			stack = new GraphicDecorationStackPane();
-			Parent oldRoot = target.getScene().getRoot();
-			target.getScene().setRoot(stack);
-			stack.getChildren().add(oldRoot);
+			if (target.getScene() == null) {
+				sceneChangedListener = (observable, oldValue, newValue) -> {
+					if (oldValue == null && newValue != null) {
+						target.sceneProperty().removeListener(sceneChangedListener);
+						setupStack();
+						code.run();
+					}
+				};
+				target.sceneProperty().addListener(sceneChangedListener);
+			} else {
+				setupStack();
+				code.run();
+			}
 		} else {
 			stack = (GraphicDecorationStackPane) parent;
+			code.run();
 		}
-        stack.needsLayoutProperty().removeListener(targetNeedsLayoutListener);
-        stack.needsLayoutProperty().addListener(targetNeedsLayoutListener);
+	}
+	
+	private void setupStack() {
+		stack = new GraphicDecorationStackPane();
+		Parent oldRoot = target.getScene().getRoot();
+		target.getScene().setRoot(stack);
+		stack.getChildren().add(oldRoot);		
+	}
+	
+	private void setListener() {
+		stack.needsLayoutProperty().removeListener(targetNeedsLayoutListener);
+		stack.needsLayoutProperty().addListener(targetNeedsLayoutListener);		
 	}
 	
 	
