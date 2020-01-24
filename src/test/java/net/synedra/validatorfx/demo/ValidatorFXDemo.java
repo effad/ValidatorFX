@@ -31,13 +31,13 @@ public class ValidatorFXDemo extends Application {
 
 	private Validator validator = new Validator();
 	private StringBinding problemsText;
+	private GridPane grid;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("ValidatorFX Demo");
-		
-		
-		GridPane grid = createGrid();
+
+		grid = createGrid();
 		
 		Text sceneTitle = new Text("Welcome");
 		sceneTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
@@ -54,6 +54,7 @@ public class ValidatorFXDemo extends Application {
 		HBox bottomBox = new HBox(10);
 		bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
 		bottomBox.getChildren().add(signUp);
+		signUp.setOnAction(e -> signUp());
 		
 		validator.createCheck()
 			.withMethod(c -> {
@@ -133,6 +134,10 @@ public class ValidatorFXDemo extends Application {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		return grid;
+	}
+	
+	private void signUp() {
+		grid.getChildren().setAll(new Text("You're now signed in."));
 	}
 
 	public static void main(String[] args) {
