@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.transform.Transform;
 
 /** GraphicDecoration provides decoration of nodes by overlaying them with another node.
  * @author r.lichtenberger@synedra.com
@@ -18,7 +19,9 @@ public class GraphicDecoration implements Decoration {
     private final double xOffset;
     private final double yOffset;
 	
-    private final ChangeListener<Boolean> targetNeedsLayoutListener;
+    private final ChangeListener<Boolean> layoutListener;
+    private final ChangeListener<Transform> transformListener;
+    
     private ChangeListener<Scene> sceneChangedListener;
     private GraphicDecorationStackPane stack;
     
@@ -49,12 +52,15 @@ public class GraphicDecoration implements Decoration {
 		this.pos = position;
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
-		targetNeedsLayoutListener = (observable, oldValue, newValue) -> layoutGraphic();
+		layoutListener = (observable, oldValue, newValue) -> layoutGraphic();
+		transformListener = (observable, oldValue, newValue) -> layoutGraphic();
 	}
 	
 	@Override
 	public void add(Node target) {
 		this.target = target;
+		decorationNode.visibleProperty().bind(target.visibleProperty().and(target.sceneProperty().isNotNull()));
+		
 		withStack(() -> {
 			setListener();
 			stack.getChildren().add(decorationNode);
@@ -65,11 +71,13 @@ public class GraphicDecoration implements Decoration {
 
 	@Override
 	public void remove(Node target) {
+		decorationNode.visibleProperty().unbind();
 		if (stack != null) {
 			stack.getChildren().remove(decorationNode);
-			stack.needsLayoutProperty().removeListener(targetNeedsLayoutListener);
+			stack.needsLayoutProperty().removeListener(layoutListener);
 			this.target = null;
 		}
+		target.localToSceneTransformProperty().removeListener(transformListener);		
 	}
 	
 	private void withStack(Runnable code) {
@@ -105,8 +113,10 @@ public class GraphicDecoration implements Decoration {
 	}
 	
 	private void setListener() {
-		stack.needsLayoutProperty().removeListener(targetNeedsLayoutListener);
-		stack.needsLayoutProperty().addListener(targetNeedsLayoutListener);		
+		stack.needsLayoutProperty().removeListener(layoutListener);
+		stack.needsLayoutProperty().addListener(layoutListener);		
+		target.localToSceneTransformProperty().removeListener(transformListener);
+		target.localToSceneTransformProperty().addListener(transformListener);
 	}
 	
 	

@@ -148,6 +148,35 @@ public class GraphicDecorationTest extends TestBase {
 		assertEquals(1, countDecorationStackPanes(hbox));
 		assertTrue(hasDecorationNode(robot));
 	}
+	
+	@Test
+	public void testToggleVisiblity() {
+		fx(() -> {
+			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
+			decoration.add(target);
+		});
+		assertTrue(decorationNode.isVisible());
+		
+		fx(() -> target.setVisible(false));
+		assertFalse(decorationNode.isVisible());
+	}
+	
+	@Test
+	public void testToggleTargetInScene() {
+		HBox hbox = new HBox();
+		fx(() -> {
+			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
+			decoration.add(hbox);
+		});
+		assertFalse(decorationNode.isVisible());
+		
+		fx(() -> root.getChildren().add(hbox));		
+		assertTrue(decorationNode.isVisible());
+		
+		fx(() -> root.getChildren().remove(hbox));
+		assertFalse(decorationNode.isVisible());
+	}
+	
 
 	private int countDecorationStackPanes(Node node) {
 		int count = 0;
