@@ -10,6 +10,5 @@ public class GraphicDecorationStackPane extends StackPane {
 	public GraphicDecorationStackPane() {
 		super();
 		setId("graphic validator overlay stack");
-	}
-
+	}	
 }

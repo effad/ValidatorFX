@@ -57,6 +57,19 @@ public class GraphicDecoration implements Decoration {
 		transformListener = (observable, oldValue, newValue) -> layoutGraphic();
 	}
 	
+	/** Manually trigger an update for decorations in scene.
+	 *  
+	 * You should not need to call this method, because ValidatorFX should detect the need to update graphic validations.
+	 *  If you do need to call this method, consider filing an issue at https://github.com/effad/ValidatorFX/issues
+	 * @param node A node in the scene to update decorations for
+	 */
+	public static void updateDecorations(Node node) {
+		GraphicDecorationStackPane decorationPane = findDecorationPane(node);
+		if (decorationPane != null) {
+			decorationPane.requestLayout(); // will trigger the layoutListener for all graphic decorations in scene
+		}
+	}
+	
 	@Override
 	public void add(Node target) {
 		this.target = target;		
@@ -78,11 +91,8 @@ public class GraphicDecoration implements Decoration {
 	}
 	
 	private void withStack(Runnable code) {
-		Node parent = target.getParent();
-		while (parent != null && !(parent instanceof GraphicDecorationStackPane)) {
-			parent = parent.getParent();			
-		}
-		if (parent == null) {
+		stack = findDecorationPane(target);
+		if (stack == null) {
 			if (target.getScene() == null) {
 				sceneChangedListener = (observable, oldValue, newValue) -> {
 					if (oldValue == null && newValue != null) {
@@ -97,9 +107,16 @@ public class GraphicDecoration implements Decoration {
 				code.run();
 			}
 		} else {
-			stack = (GraphicDecorationStackPane) parent;
 			code.run();
 		}
+	}
+
+	private static GraphicDecorationStackPane findDecorationPane(Node node) {
+		Node parent = node.getParent();
+		while (parent != null && !(parent instanceof GraphicDecorationStackPane)) {
+			parent = parent.getParent();			
+		}
+		return (GraphicDecorationStackPane) parent;
 	}
 	
 	private void setupStack() {
