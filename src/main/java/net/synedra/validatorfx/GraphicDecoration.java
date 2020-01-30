@@ -58,20 +58,18 @@ public class GraphicDecoration implements Decoration {
 	
 	@Override
 	public void add(Node target) {
-		this.target = target;
-		decorationNode.visibleProperty().bind(target.visibleProperty().and(target.sceneProperty().isNotNull()));
-		
+		this.target = target;		
 		withStack(() -> {
 			setListener();
 			stack.getChildren().add(decorationNode);
 			layoutGraphic();
 		});
+		updateDecorationNodeVisibility();
 	}
 
 
 	@Override
 	public void remove(Node target) {
-		decorationNode.visibleProperty().unbind();
 		if (stack != null) {
 			stack.getChildren().remove(decorationNode);
 			stack.needsLayoutProperty().removeListener(layoutListener);
@@ -173,5 +171,20 @@ public class GraphicDecoration implements Decoration {
         Bounds stackBounds = stack.sceneToLocal(sceneBounds);
         decorationNode.setLayoutX(x + xOffset + stackBounds.getMinX());
         decorationNode.setLayoutY(y + yOffset +  stackBounds.getMinY());
+        updateDecorationNodeVisibility();
     }
+    
+    private void updateDecorationNodeVisibility() {
+    	decorationNode.setVisible(target.getScene() != null && targetVisible());
+    }
+
+	private boolean targetVisible() {
+		Node node = target;
+		boolean visible = true;
+		while (visible && node != null) {
+			visible = node.isVisible();
+			node = node.getParent();
+		}
+		return visible;
+	}
 }

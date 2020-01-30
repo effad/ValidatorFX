@@ -10,6 +10,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.synedra.validatorfx.DefaultDecoration;
@@ -28,8 +29,6 @@ public class UpdateDemo extends Application {
 		primaryStage.setTitle("ValidatorFX Demo");
 
 		grid = createGrid();
-		ScrollPane scrollPane = new ScrollPane(grid);
-		scrollPane.setMaxHeight(480);
 		
 		for (int i = 0; i < 50; i++) {
 			grid.add(new Text("Field #" + i), 0, i);
@@ -61,6 +60,21 @@ public class UpdateDemo extends Application {
 			grid.add(toggleParent, 3, i);
 		}
 		
+		VBox vbox = new VBox();
+		
+		CheckBox toggleGridVisibility = new CheckBox("fields visible");
+		toggleGridVisibility.setSelected(true);
+		grid.visibleProperty().bind(toggleGridVisibility.selectedProperty());
+		
+		CheckBox toggleGridInVBox = new CheckBox("grid in scene");
+		toggleGridInVBox.setSelected(true);
+		toggleGridInVBox.selectedProperty().addListener((observable, oldValue, newValue) -> toggleGridInVBox(vbox, newValue));
+		
+		vbox.getChildren().addAll(toggleGridVisibility, toggleGridInVBox, grid);
+		
+		
+		ScrollPane scrollPane = new ScrollPane(vbox);
+		scrollPane.setMaxHeight(480);
 		Scene scene = new Scene(scrollPane);
 		scene.getStylesheets().add(getClass().getResource("demo.css").toExternalForm());
 		
@@ -68,7 +82,6 @@ public class UpdateDemo extends Application {
 		primaryStage.show();		
 	}
 
-	
 	private void toggleParent(CheckBox toggleParent) {
 		TextField textfield = (TextField) toggleParent.getUserData();
 		Integer rowIndex = (Integer) textfield.getUserData(); 
@@ -76,6 +89,14 @@ public class UpdateDemo extends Application {
 			grid.add(textfield, 1, rowIndex);
 		} else {
 			grid.getChildren().remove(textfield);
+		}
+	}
+	
+	private void toggleGridInVBox(VBox vbox, boolean add) {
+		if (add) {
+			vbox.getChildren().add(grid);
+		} else {
+			vbox.getChildren().remove(grid);			
 		}
 	}
 

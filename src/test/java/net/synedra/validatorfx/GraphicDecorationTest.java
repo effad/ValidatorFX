@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -158,6 +159,7 @@ public class GraphicDecorationTest extends TestBase {
 		assertTrue(decorationNode.isVisible());
 		
 		fx(() -> target.setVisible(false));
+		WaitForAsyncUtils.waitForFxEvents();
 		assertFalse(decorationNode.isVisible());
 	}
 	
@@ -168,16 +170,18 @@ public class GraphicDecorationTest extends TestBase {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
 			decoration.add(hbox);
 		});
+		WaitForAsyncUtils.waitForFxEvents();
 		assertFalse(decorationNode.isVisible());
 		
 		fx(() -> root.getChildren().add(hbox));		
+		WaitForAsyncUtils.waitForFxEvents();
 		assertTrue(decorationNode.isVisible());
 		
 		fx(() -> root.getChildren().remove(hbox));
+		WaitForAsyncUtils.waitForFxEvents();
 		assertFalse(decorationNode.isVisible());
 	}
 	
-
 	private int countDecorationStackPanes(Node node) {
 		int count = 0;
 		while (node != null) {
