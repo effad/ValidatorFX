@@ -156,11 +156,11 @@ public class GraphicDecorationTest extends TestBase {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
 			decoration.add(target);
 		});
-		assertTrue(decorationNode.isVisible());
+		assertTrue(decorationNodeVisible());
 		
 		fx(() -> target.setVisible(false));
 		WaitForAsyncUtils.waitForFxEvents();
-		assertFalse(decorationNode.isVisible());
+		assertFalse(decorationNodeVisible());
 	}
 	
 	@Test
@@ -171,15 +171,19 @@ public class GraphicDecorationTest extends TestBase {
 			decoration.add(hbox);
 		});
 		WaitForAsyncUtils.waitForFxEvents();
-		assertFalse(decorationNode.isVisible());
+		assertFalse(decorationNodeVisible());
 		
 		fx(() -> root.getChildren().add(hbox));		
 		WaitForAsyncUtils.waitForFxEvents();
-		assertTrue(decorationNode.isVisible());
+		assertTrue(decorationNodeVisible());
 		
 		fx(() -> root.getChildren().remove(hbox));
 		WaitForAsyncUtils.waitForFxEvents();
-		assertFalse(decorationNode.isVisible());
+		assertFalse(decorationNodeVisible());
+	}
+	
+	private boolean decorationNodeVisible() {
+		return decorationNode.getScene() != null;
 	}
 	
 	private int countDecorationStackPanes(Node node) {

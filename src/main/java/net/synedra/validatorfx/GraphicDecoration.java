@@ -1,5 +1,6 @@
 package net.synedra.validatorfx;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -61,10 +62,8 @@ public class GraphicDecoration implements Decoration {
 		this.target = target;		
 		withStack(() -> {
 			setListener();
-			stack.getChildren().add(decorationNode);
 			layoutGraphic();
 		});
-		updateDecorationNodeVisibility();
 	}
 
 
@@ -171,11 +170,21 @@ public class GraphicDecoration implements Decoration {
         Bounds stackBounds = stack.sceneToLocal(sceneBounds);
         decorationNode.setLayoutX(x + xOffset + stackBounds.getMinX());
         decorationNode.setLayoutY(y + yOffset +  stackBounds.getMinY());
-        updateDecorationNodeVisibility();
+        addOrRemoveDecorationNodeToStack();
     }
     
-    private void updateDecorationNodeVisibility() {
-    	decorationNode.setVisible(target.getScene() != null && targetVisible());
+    private void addOrRemoveDecorationNodeToStack() {
+    	if (stack != null) {
+    		boolean shouldBeThere = target.getScene() != null && targetVisible();
+    		boolean isThere = stack.getChildren().contains(decorationNode);
+    		if (shouldBeThere != isThere) {
+		    	if (shouldBeThere) {
+					stack.getChildren().add(decorationNode);
+		    	} else {
+		    		Platform.runLater(() -> stack.getChildren().remove(decorationNode));
+		    	}
+    		}
+    	}
     }
 
 	private boolean targetVisible() {

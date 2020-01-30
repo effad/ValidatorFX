@@ -6,10 +6,12 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -23,11 +25,24 @@ public class UpdateDemo extends Application {
 
 	private GridPane grid;
 	private Validator validator = new Validator();
+	private ScrollPane root;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("ValidatorFX Demo");
+		primaryStage.setTitle("Update Demo");
 
+		root = new ScrollPane();
+		root.setMaxHeight(480);
+		Scene scene = new Scene(root);
+		scene.getStylesheets().add(getClass().getResource("demo.css").toExternalForm());
+		
+		rebuild();
+		
+		primaryStage.setScene(scene);		
+		primaryStage.show();		
+	}
+
+	private void rebuild() {
 		grid = createGrid();
 		
 		for (int i = 0; i < 50; i++) {
@@ -70,16 +85,12 @@ public class UpdateDemo extends Application {
 		toggleGridInVBox.setSelected(true);
 		toggleGridInVBox.selectedProperty().addListener((observable, oldValue, newValue) -> toggleGridInVBox(vbox, newValue));
 		
-		vbox.getChildren().addAll(toggleGridVisibility, toggleGridInVBox, grid);
+		Button rebuild = new Button("rebuild GUI");
+		rebuild.setOnAction(e -> rebuild());
 		
+		vbox.getChildren().addAll(new HBox(toggleGridVisibility, toggleGridInVBox, rebuild), grid);
 		
-		ScrollPane scrollPane = new ScrollPane(vbox);
-		scrollPane.setMaxHeight(480);
-		Scene scene = new Scene(scrollPane);
-		scene.getStylesheets().add(getClass().getResource("demo.css").toExternalForm());
-		
-		primaryStage.setScene(scene);		
-		primaryStage.show();		
+		root.setContent(vbox);
 	}
 
 	private void toggleParent(CheckBox toggleParent) {
