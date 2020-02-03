@@ -15,7 +15,7 @@ plugins {
 	id 'signing'
 }
 
-version = '0.1.9'
+version = '0.1.10'
 
 repositories {
 	// Use jcenter for resolving dependencies.
