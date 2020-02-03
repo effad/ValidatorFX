@@ -151,6 +151,23 @@ public class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
+	public void testDelayedAddAfterRemove(FxRobot robot) {
+		HBox hbox = new HBox();
+		GraphicDecoration decoration = new GraphicDecoration(decorationNode);
+		fx(() -> {
+			decoration.add(hbox);
+		});
+		assertEquals(0, countDecorationStackPanes(hbox));
+		assertFalse(hasDecorationNode(robot));
+		fx(() -> {
+			decoration.remove(hbox);
+			root.getChildren().add(hbox);
+		});
+		assertFalse(hasDecorationNode(robot));
+	}
+	
+	
+	@Test
 	public void testToggleVisiblity() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);

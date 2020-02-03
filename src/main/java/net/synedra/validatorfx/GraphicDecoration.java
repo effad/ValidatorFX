@@ -14,7 +14,7 @@ import javafx.scene.transform.Transform;
  */
 public class GraphicDecoration implements Decoration {
 
-	private Node target;
+	private Node decoratedNode;
     private final Node decorationNode;
     private final Pos pos;
     private final double xOffset;
@@ -72,11 +72,13 @@ public class GraphicDecoration implements Decoration {
 	
 	@Override
 	public void add(Node target) {
-		this.target = target;		
+		decoratedNode = target;		
 		withStack(() -> {
-			setListener();
-			layoutGraphic();
-		});
+			if (decoratedNode != null) {	// #10: could have been removed again already ...
+				setListener();
+				layoutGraphic();
+			}
+		}, target);
 	}
 
 
@@ -85,25 +87,25 @@ public class GraphicDecoration implements Decoration {
 		if (stack != null) {
 			stack.getChildren().remove(decorationNode);
 			stack.needsLayoutProperty().removeListener(layoutListener);
-			this.target = null;
 		}
+		this.decoratedNode = null;
 		target.localToSceneTransformProperty().removeListener(transformListener);		
 	}
 	
-	private void withStack(Runnable code) {
+	private void withStack(Runnable code, Node target) {
 		stack = findDecorationPane(target);
 		if (stack == null) {
 			if (target.getScene() == null) {
 				sceneChangedListener = (observable, oldValue, newValue) -> {
 					if (oldValue == null && newValue != null) {
 						target.sceneProperty().removeListener(sceneChangedListener);
-						setupStack();
+						setupStack(target);
 						code.run();
 					}
 				};
 				target.sceneProperty().addListener(sceneChangedListener);
 			} else {
-				setupStack();
+				setupStack(target);
 				code.run();
 			}
 		} else {
@@ -119,7 +121,7 @@ public class GraphicDecoration implements Decoration {
 		return (GraphicDecorationStackPane) parent;
 	}
 	
-	private void setupStack() {
+	private void setupStack(Node target) {
 		stack = new GraphicDecorationStackPane();
 		Parent oldRoot = target.getScene().getRoot();
 		target.getScene().setRoot(stack);
@@ -129,8 +131,8 @@ public class GraphicDecoration implements Decoration {
 	private void setListener() {
 		stack.needsLayoutProperty().removeListener(layoutListener);
 		stack.needsLayoutProperty().addListener(layoutListener);		
-		target.localToSceneTransformProperty().removeListener(transformListener);
-		target.localToSceneTransformProperty().addListener(transformListener);
+		decoratedNode.localToSceneTransformProperty().removeListener(transformListener);
+		decoratedNode.localToSceneTransformProperty().addListener(transformListener);
 	}
 	
 	
@@ -142,18 +144,18 @@ public class GraphicDecoration implements Decoration {
         final double decorationNodeWidth = decorationNodeLayoutBounds.getWidth();
         final double decorationNodeHeight = decorationNodeLayoutBounds.getHeight();
 
-        Bounds targetBounds = target.getLayoutBounds();
+        Bounds targetBounds = decoratedNode.getLayoutBounds();
         double x = targetBounds.getMinX();
         double y = targetBounds.getMinY();
 
         double targetWidth = targetBounds.getWidth();
         if (targetWidth <= 0) {
-            targetWidth = target.prefWidth(-1);
+            targetWidth = decoratedNode.prefWidth(-1);
         }
         
         double targetHeight = targetBounds.getHeight();
         if (targetHeight <= 0) {
-            targetHeight = target.prefHeight(-1);
+            targetHeight = decoratedNode.prefHeight(-1);
         }
 
         switch (pos.getHpos()) {
@@ -179,11 +181,11 @@ public class GraphicDecoration implements Decoration {
         		y += targetHeight - decorationNodeHeight / 2.0;
         		break;
         	case BASELINE: 
-        		y += target.getBaselineOffset() - decorationNode.getBaselineOffset() - decorationNodeHeight / 2.0;
+        		y += decoratedNode.getBaselineOffset() - decorationNode.getBaselineOffset() - decorationNodeHeight / 2.0;
         		break;
         }
         
-        Bounds sceneBounds = target.localToScene(targetBounds);
+        Bounds sceneBounds = decoratedNode.localToScene(targetBounds);
         Bounds stackBounds = stack.sceneToLocal(sceneBounds);
         decorationNode.setLayoutX(x + xOffset + stackBounds.getMinX());
         decorationNode.setLayoutY(y + yOffset +  stackBounds.getMinY());
@@ -192,7 +194,7 @@ public class GraphicDecoration implements Decoration {
     
     private void addOrRemoveDecorationNodeToStack() {
     	if (stack != null) {
-    		boolean shouldBeThere = target.getScene() != null && targetVisible();
+    		boolean shouldBeThere = decoratedNode.getScene() != null && targetVisible();
     		boolean isThere = stack.getChildren().contains(decorationNode);
     		if (shouldBeThere != isThere) {
 		    	if (shouldBeThere) {
@@ -205,7 +207,7 @@ public class GraphicDecoration implements Decoration {
     }
 
 	private boolean targetVisible() {
-		Node node = target;
+		Node node = decoratedNode;
 		boolean visible = true;
 		while (visible && node != null) {
 			visible = node.isVisible();
