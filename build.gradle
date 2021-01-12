@@ -6,7 +6,7 @@ plugins {
 	id 'signing'
 }
 
-version = '0.1.12'
+version = '0.1.13'
 
 repositories {
 	// Use jcenter for resolving dependencies.
@@ -38,7 +38,7 @@ jar {
 }
 
 javafx {
-		version = "13"
+		version = "11"
 		modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.base' ]
 }
 
