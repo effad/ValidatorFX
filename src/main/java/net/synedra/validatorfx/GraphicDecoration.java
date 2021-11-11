@@ -187,8 +187,8 @@ public class GraphicDecoration implements Decoration {
         
         Bounds sceneBounds = decoratedNode.localToScene(targetBounds);
         Bounds stackBounds = stack.sceneToLocal(sceneBounds);
-        decorationNode.setLayoutX(x + xOffset + stackBounds.getMinX());
-        decorationNode.setLayoutY(y + yOffset +  stackBounds.getMinY());
+        decorationNode.setLayoutX(Math.round(x + xOffset + stackBounds.getMinX()));
+        decorationNode.setLayoutY(Math.round(y + yOffset + stackBounds.getMinY()));
         addOrRemoveDecorationNodeToStack();
     }
     
