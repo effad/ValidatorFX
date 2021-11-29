@@ -11,10 +11,10 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import javafx.scene.shape.Rectangle;
 
 @ExtendWith(ApplicationExtension.class)
-public class StyleClassDecorationTest {
+class StyleClassDecorationTest {
 
 	@Test
-	public void testDecoration() {
+	void testDecoration() {
 		Rectangle targetNode = new Rectangle(1, 2, 3, 4);
 		StyleClassDecoration decoration = new StyleClassDecoration("a", "b", "c");
 		decoration.add(targetNode);
@@ -30,7 +30,7 @@ public class StyleClassDecorationTest {
 	}
 	
 	@Test
-	public void testInvalidConstructorCall() {
+	void testInvalidConstructorCall() {
 		assertThrows(IllegalArgumentException.class, () -> new StyleClassDecoration((String []) null));
 		assertThrows(IllegalArgumentException.class, () -> new StyleClassDecoration());
 	}

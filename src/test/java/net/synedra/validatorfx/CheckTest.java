@@ -23,7 +23,7 @@ import javafx.stage.Stage;
  * @author r.lichtenberger@synedra.com
  */
 @ExtendWith(ApplicationExtension.class)
-public class CheckTest {
+class CheckTest {
 	
 	private static String WARNING = "This is a warning.";
 	
@@ -37,7 +37,7 @@ public class CheckTest {
 	}
 
 	@Test
-	public void testCheckMethod() {
+	void testCheckMethod() {
 		Check c = new Check()
 			.withMethod(this::check1);		
 		c.recheck();
@@ -50,7 +50,7 @@ public class CheckTest {
 	}
 	
 	@Test
-	public void testDependsOn() {
+	void testDependsOn() {
 		StringProperty text = new SimpleStringProperty("foo"); 
 		Check c = new Check()
 			.withMethod(this::check2)
@@ -70,7 +70,7 @@ public class CheckTest {
 	}
 	
 	@Test
-	public void testTextFieldMaxLength(FxRobot robot) {
+	void testTextFieldMaxLength(FxRobot robot) {
 		Check c = new Check()
 			.withMethod(this::check3)
 			.dependsOn("content", textfield.textProperty())

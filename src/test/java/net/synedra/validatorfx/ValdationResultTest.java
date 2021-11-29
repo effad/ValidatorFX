@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class ValdationResultTest {
+class ValdationResultTest {
 
 	@Test
-	public void testSetup() {
+	void testSetup() {
 		ValidationResult result = new ValidationResult();
 		assertTrue(result.getMessages().isEmpty());
 		result.addWarning("warn");
@@ -22,7 +22,7 @@ public class ValdationResultTest {
 	}
 	
 	@Test
-	public void testAddAll() {
+	void testAddAll() {
 		ValidationResult result1 = new ValidationResult();
 		ValidationResult result2 = new ValidationResult();
 		result1.addWarning("warn");

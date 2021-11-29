@@ -25,7 +25,7 @@ import javafx.stage.Stage;
  * @author r.lichtenberger@synedra.com
  */
 @ExtendWith(ApplicationExtension.class)
-public class ValidatorTest extends TestBase {
+class ValidatorTest extends TestBase {
 	
 	private VBox root;
 
@@ -42,7 +42,7 @@ public class ValidatorTest extends TestBase {
 	}
 	
 	@Test
-	public void testTextFieldWithTwoChecks(FxRobot robot) {
+	void testTextFieldWithTwoChecks(FxRobot robot) {
 		TextField textfield = new TextField();
 		fx(() -> root.getChildren().add(textfield));
 		
@@ -88,7 +88,7 @@ public class ValidatorTest extends TestBase {
 	}
 	
 	@Test
-	public void testValidateOnSubmit(FxRobot robot) {
+	void testValidateOnSubmit(FxRobot robot) {
 		TextField textfield = new TextField();
 		fx(() -> root.getChildren().add(textfield));
 		
@@ -118,7 +118,7 @@ public class ValidatorTest extends TestBase {
 	}
 	
 	@Test
-	public void testStringProperty(FxRobot robot) {
+	void testStringProperty(FxRobot robot) {
 		TextField textfield = new TextField();
 		fx(() -> root.getChildren().add(textfield));
 		

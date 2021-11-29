@@ -14,17 +14,17 @@ import javafx.scene.control.Button;
 /** TooltipWrapperTest tests TooltipWrapper.
  * @author r.lichtenberger@synedra.com
  */
-public class TooltipWrapperTest {
+class TooltipWrapperTest {
 
 	@Test
-	public void testWrappedNode() {
+	void testWrappedNode() {
 		Button button = new Button("test");
 		TooltipWrapper<Button> wrapper = new TooltipWrapper<>(button, new SimpleBooleanProperty(false), new SimpleStringProperty("foobar"));
 		assertEquals(button, wrapper.getWrappedNode());
 	}
 	
 	@Test
-	public void testDisabling() {
+	void testDisabling() {
 		SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
 		Button button = new Button("test");
 		TooltipWrapper<Button> wrapper = new TooltipWrapper<>(button, disable, new SimpleStringProperty("foobar"));		
@@ -37,7 +37,7 @@ public class TooltipWrapperTest {
 	
 	// this test uses implementation details of JavaFX and may fail if javafx.scene.control.Tooltip is changed
 	@Test
-	public void testTooltip() {
+	void testTooltip() {
 		SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
 		Button button = new Button("test");
 		TooltipWrapper<Button> wrapper = new TooltipWrapper<>(button, disable, new SimpleStringProperty("foobar"));		

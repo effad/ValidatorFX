@@ -11,10 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 
 @ExtendWith(ApplicationExtension.class)
-public class DefaultDecorationTest extends TestBase {
+class DefaultDecorationTest extends TestBase {
 
 	@Test
-	public void testFactory() {
+	void testFactory() {
 		Function<ValidationMessage, Decoration> defaultDefaultFactory = DefaultDecoration.getFactory(); 
 		assertNotNull(defaultDefaultFactory);		
 		Function<ValidationMessage, Decoration> testFactory = m -> null;
@@ -27,7 +27,7 @@ public class DefaultDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testStyleClassDecoration() {
+	void testStyleClassDecoration() {
 		ValidationMessage message = new ValidationMessage(Severity.WARNING, "warning");
 		Decoration decoration = DefaultDecoration.createStyleClassDecoration(message);
 		assertNotNull(decoration);
@@ -35,7 +35,7 @@ public class DefaultDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testGraphicDecoration() {
+	void testGraphicDecoration() {
 		ValidationMessage message = new ValidationMessage(Severity.WARNING, "warning");
 		Decoration decoration = DefaultDecoration.createGraphicDecoration(message);
 		assertNotNull(decoration);

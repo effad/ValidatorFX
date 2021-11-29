@@ -19,7 +19,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 @ExtendWith(ApplicationExtension.class)
-public class GraphicDecorationTest extends TestBase {
+class GraphicDecorationTest extends TestBase {
 	
 	private VBox root;
 	private Rectangle decorationNode;
@@ -36,13 +36,13 @@ public class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testDecoration() {
+	void testDecoration() {
 		GraphicDecoration decoration = new GraphicDecoration(decorationNode);
 		fx(() -> {
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), -5);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), -5);
+		assertEquals(-5, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(-5, decorationNode.getBoundsInParent().getMinY());
 		fx(() -> {
 			decoration.remove(target);
 		});
@@ -50,68 +50,68 @@ public class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testDecorationTopLeft() {
+	void testDecorationTopLeft() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), -5);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), -5);
+		assertEquals(-5, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(-5, decorationNode.getBoundsInParent().getMinY());
 	}
 	
 	@Test
-	public void testDecorationBottomLeft() {
+	void testDecorationBottomLeft() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode, Pos.BOTTOM_LEFT);
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), -5);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), 95);
+		assertEquals(-5, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(95, decorationNode.getBoundsInParent().getMinY());
 	}
 	
 	@Test
-	public void testDecorationTopRight() {
+	void testDecorationTopRight() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode, Pos.TOP_RIGHT);
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), 95);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), -5);
+		assertEquals(95, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(-5, decorationNode.getBoundsInParent().getMinY());
 	}
 	
 	@Test
-	public void testDecorationBottomRight() {
+	void testDecorationBottomRight() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode, Pos.BOTTOM_RIGHT);
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), 95);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), 95);
+		assertEquals(95, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(95, decorationNode.getBoundsInParent().getMinY());
 	}
 	
 	@Test
-	public void testDecorationCenter() {
+	void testDecorationCenter() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode, Pos.CENTER);
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), 45);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), 45);
+		assertEquals(45, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(45, decorationNode.getBoundsInParent().getMinY());
 	}
 	
 	
 	@Test
-	public void testDecorationOffset() {
+	void testDecorationOffset() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode, Pos.TOP_LEFT, 12, 17);
 			decoration.add(target);
 		});
-		assertEquals(decorationNode.getBoundsInParent().getMinX(), -5 + 12);
-		assertEquals(decorationNode.getBoundsInParent().getMinY(), -5 + 17);
+		assertEquals(-5 + 12, decorationNode.getBoundsInParent().getMinX());
+		assertEquals(-5 + 17, decorationNode.getBoundsInParent().getMinY());
 	}
 	
 	@Test
-	public void testDecorationStackReuse() {
+	void testDecorationStackReuse() {
 		// without decoration, we don't have a decoration pane
 		assertEquals(0, countDecorationStackPanes(target));
 		fx(() -> {
@@ -135,7 +135,7 @@ public class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testNonSceneNode(FxRobot robot) {
+	void testNonSceneNode(FxRobot robot) {
 		HBox hbox = new HBox();
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
@@ -151,7 +151,7 @@ public class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testDelayedAddAfterRemove(FxRobot robot) {
+	void testDelayedAddAfterRemove(FxRobot robot) {
 		HBox hbox = new HBox();
 		GraphicDecoration decoration = new GraphicDecoration(decorationNode);
 		fx(() -> {
@@ -168,7 +168,7 @@ public class GraphicDecorationTest extends TestBase {
 	
 	
 	@Test
-	public void testToggleVisiblity() {
+	void testToggleVisiblity() {
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
 			decoration.add(target);
@@ -181,7 +181,7 @@ public class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
-	public void testToggleTargetInScene() {
+	void testToggleTargetInScene() {
 		HBox hbox = new HBox();
 		fx(() -> {
 			GraphicDecoration decoration = new GraphicDecoration(decorationNode);

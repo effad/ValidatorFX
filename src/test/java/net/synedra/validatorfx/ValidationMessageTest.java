@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class ValidationMessageTest {
+class ValidationMessageTest {
 
 	@Test
-	public void testMessage() {
+	void testMessage() {
 		ValidationMessage msg = new ValidationMessage(Severity.WARNING, "Test1");
 		assertEquals(Severity.WARNING, msg.getSeverity());
 		assertEquals("Test1", msg.getText());
@@ -19,7 +19,7 @@ public class ValidationMessageTest {
 	}
 	
 	@Test
-	public void testHashAndEquals() {
+	void testHashAndEquals() {
 		ValidationMessage msg1 = new ValidationMessage(Severity.WARNING, "Test1");
 		ValidationMessage msg2 = new ValidationMessage(Severity.WARNING, "Test1");
 		ValidationMessage msg3 = new ValidationMessage(Severity.ERROR, "Test1");
