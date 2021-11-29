@@ -14,6 +14,7 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
+import javafx.beans.binding.StringBinding;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -114,6 +115,52 @@ public class ValidatorTest extends TestBase {
 		checkMessage(validator, Severity.ERROR, "Txt cntns vwls");
 		assertFalse(validator.containsWarnings());
 		assertTrue(validator.containsErrors());		
+	}
+	
+	@Test
+	public void testStringProperty(FxRobot robot) {
+		TextField textfield = new TextField();
+		fx(() -> root.getChildren().add(textfield));
+		
+		Validator validator = new Validator();
+		validator.createCheck()
+			.withMethod(this::maxSize)
+			.dependsOn("content", textfield.textProperty())
+			.decorates(textfield)
+			.immediate()
+		;
+		validator.createCheck()
+			.withMethod(this::noVowels)
+			.dependsOn("content", textfield.textProperty())
+			.decorates(textfield)
+			.immediate()
+		;
+		
+		StringBinding all = validator.createStringBinding("* ", "\n", Severity.WARNING, Severity.ERROR);
+		StringBinding errors = validator.createStringBinding("* ", "\n", Severity.ERROR);
+		StringBinding errors2 = validator.createStringBinding("* ", "\n");
+		StringBinding warnings = validator.createStringBinding("* ", "\n", Severity.WARNING);
+		
+		assertEquals("", all.get());
+		assertEquals("", errors.get());
+		assertEquals("", errors2.get());
+		assertEquals("", warnings.get());
+		
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait 
+		
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 1);
+
+		assertEquals("* Txt cntns vwls", all.get());
+		assertEquals("* Txt cntns vwls", errors.get());
+		assertEquals("* Txt cntns vwls", errors2.get());
+		assertEquals("", warnings.get());	
+		
+		robot.type(KeyCode.A, 6);
+		assertEquals("* Too long\n* Txt cntns vwls", all.get());
+		assertEquals("* Txt cntns vwls", errors.get());
+		assertEquals("* Txt cntns vwls", errors2.get());
+		assertEquals("* Too long", warnings.get());
 	}
 	
 	private void maxSize(Check.Context c) {

@@ -124,3 +124,26 @@ Here's a screenshot of the example in action:
 ![Screenshot of MinimalExample](images/MinimalDemo.png)
 
 To see more features and Details have a look at [ValidatorFXDemo.java](src/test/java/net/synedra/validatorfx/demo/ValidatorFXDemo.java) and the other files in the demo folder.
+
+## Disabling buttons with a tooltip
+
+In many cases a form will contain a submit button that should be disabled if form validation fails. It is important to tell the user about the reason for the button being disabled. This can be done by using a graphic decoration that will display a tooltip if hovered. However this is not very intuitive and the graphic decorations will usually be very small and thus difficult for the user to hover.
+
+Unfortunately disabled nodes cannot show tooltips in JavaFX due to [JDK-8090379](https://bugs.openjdk.java.net/browse/JDK-8090379).
+
+`ValidationWrapper` provides a generic workaround to this problem and can be used either independently or in conjunction with convenience methods from `Validator` as shown in this example:
+
+```java
+		TooltipWrapper<Button> signUpWrapper = new TooltipWrapper<>(
+			signUp, 
+			validator.containsErrorsProperty(), 
+			Bindings.concat("Cannot sign up:\n", validator.createStringBinding())
+		);
+```
+
+this will result in a tooltip like:
+
+![Screenshot of disabled button with tooltip](images/DisabledButtonTooltip.png)
+
+
+

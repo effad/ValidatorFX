@@ -1,8 +1,13 @@
 package net.synedra.validatorfx;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -105,5 +110,39 @@ public class Validator {
 		containsWarningsProperty.set(hasWarnings);
 		containsErrorsProperty.set(hasErrors);
 	}
+	
+	/** Create a string property that depends on the validation result.
+	 * Each error message will be displayed on a separate line prefixed with a bullet.
+	 * @return
+	 */
+	public StringBinding createStringBinding() {
+		return createStringBinding("• ", "\n", Severity.ERROR);
+	}
+	
+	/** Create a string property that depends on the validation result.
+	 * @param prefix The string to prefix each validation message with
+	 * @param separator The string to separate consecutive validation messages with
+	 * @param severities The severities to consider; If none is given, only Severity.ERROR will be considered
+	 * @return
+	 */
+	public StringBinding createStringBinding(String prefix, String separator, Severity ... severities) {
+		Set<Severity> wanted = new HashSet<>(Arrays.asList(severities));
+		if (wanted.isEmpty()) {
+			wanted.add(Severity.ERROR);
+		}
+		return Bindings.createStringBinding( () -> {
+			StringBuilder str = new StringBuilder();
+			for (ValidationMessage msg : validationResultProperty.get().getMessages()) {
+				if (wanted.contains(msg.getSeverity())) {
+					if (str.length() > 0) {
+						str.append(separator);
+					}
+					str.append(prefix + msg.getText());
+				}
+			}
+			return str.toString();
+		}, validationResultProperty);
+	}
+	
 
 }

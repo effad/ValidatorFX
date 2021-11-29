@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Decoration;
 import net.synedra.validatorfx.DefaultDecoration;
+import net.synedra.validatorfx.TooltipWrapper;
 import net.synedra.validatorfx.ValidationMessage;
 import net.synedra.validatorfx.Validator;
 
@@ -48,10 +49,15 @@ public class ValidatorFXDemo extends Application {
 		grid.add(sceneTitle, 0, 0, 2, 1);
 		
 		Button signUp = new Button("Sign up");
-		signUp.disableProperty().bind(validator.containsErrorsProperty());		
+		TooltipWrapper<Button> signUpWrapper = new TooltipWrapper<>(
+			signUp, 
+			validator.containsErrorsProperty(), 
+			Bindings.concat("Cannot sign up:\n", validator.createStringBinding())
+		);
+		
 		HBox bottomBox = new HBox(10);
 		bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
-		bottomBox.getChildren().add(signUp);
+		bottomBox.getChildren().add(signUpWrapper);
 		signUp.setOnAction(e -> signUp());
 		
 		TextField userTextField = new TextField();
@@ -162,7 +168,7 @@ public class ValidatorFXDemo extends Application {
 	private TextArea createProblemOutput() {
 		TextArea problems = new TextArea();
 		problems.setEditable(false);
-		problems.setPrefHeight(60);
+		problems.setPrefHeight(80);
 		problems.setBackground(Background.EMPTY);
 		problems.setFocusTraversable(false);
 		problemsText = Bindings.createStringBinding(this::getProblemText, validator.validationResultProperty());
