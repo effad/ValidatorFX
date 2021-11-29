@@ -131,7 +131,7 @@ In many cases a form will contain a submit button that should be disabled if for
 
 Unfortunately disabled nodes cannot show tooltips in JavaFX due to [JDK-8090379](https://bugs.openjdk.java.net/browse/JDK-8090379).
 
-`ValidationWrapper` provides a generic workaround to this problem and can be used either independently or in conjunction with convenience methods from `Validator` as shown in this example:
+`TooltipWrapper` provides a generic workaround to this problem and can be used either independently or in conjunction with convenience methods from `Validator` as shown in this example:
 
 ```java
 		TooltipWrapper<Button> signUpWrapper = new TooltipWrapper<>(
