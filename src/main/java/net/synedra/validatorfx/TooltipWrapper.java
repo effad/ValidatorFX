@@ -41,6 +41,8 @@ public class TooltipWrapper<T extends Node> extends HBox {
 		return node;
 	}
 	
+	public Tooltip getDisabledTooltip() { return disabledTooltip; }
+
 	private void updateTooltip() {
 		if (Boolean.TRUE.equals(disabledProperty.getValue())) {
 			Tooltip.install(this, disabledTooltip);
