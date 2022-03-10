@@ -4,6 +4,7 @@ plugins {
 	id 'org.openjfx.javafxplugin' version '0.0.10'
 	id 'maven-publish'
 	id 'signing'
+	id 'org.javamodularity.moduleplugin' version '1.8.10'
 }
 
 version = '0.2.1'
@@ -24,9 +25,19 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
 }
 
+compileTestJava {
+	moduleOptions {
+		compileOnClasspath = true
+	}
+}
+
 test {
     useJUnitPlatform()
     jvmArgs '-Djava.awt.headless=true', '-Dtestfx.robot=glass', '-Dtestfx.headless=true', '-Dprism.order=sw'
+
+	moduleOptions {
+		runOnClasspath = true
+	}
 }
 
 
