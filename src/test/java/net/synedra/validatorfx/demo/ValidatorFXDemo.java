@@ -10,11 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -70,7 +66,7 @@ public class ValidatorFXDemo extends Application {
 			})
 			.dependsOn("username", userTextField.textProperty())
 			.decorates(userTextField)
-			.immediate();
+			.immediate()
 		;
 		grid.add(new Label("User Name:"), 0, 1);
 		grid.add(userTextField, 1, 1);
@@ -126,10 +122,25 @@ public class ValidatorFXDemo extends Application {
 		hb.getChildren().addAll(summand1, new Text("+"), summand2, new Text("="), sum, check);
 		grid.add(hb, 0, 4, 2, 1);
 
-		TextArea problems = createProblemOutput();		
-		grid.add(problems, 0, 5, 2, 1);
-		
-		grid.add(bottomBox, 1, 7);
+
+		Check cbCheck = validator.createCheck()
+				.withMethod(this::oneMustBeChecked);
+		HBox cbBox = new HBox(15);
+		for (int i = 0; i < 5; i++) {
+			CheckBox cb = new CheckBox("Option #" + i);
+			cbBox.getChildren().add(cb);
+			cbCheck
+				.dependsOn("cb" + i, cb.selectedProperty())
+				.decorates(cb)
+			;
+		}
+		cbCheck.immediate();
+		grid.add(cbBox, 0, 5, 2, 1);
+
+		TextArea problems = createProblemOutput();
+		grid.add(problems, 0, 6, 2, 1);
+
+		grid.add(bottomBox, 1, 8);
 		
 		Scene scene = new Scene(grid);
 		scene.getStylesheets().add(getClass().getResource("demo.css").toExternalForm());
@@ -163,6 +174,16 @@ public class ValidatorFXDemo extends Application {
 				((Label) target).setText("ERR - " + m.getText());
 			}
 		};
+	}
+
+	private void oneMustBeChecked(Check.Context c) {
+		boolean oneIsChecked = false;
+		for (String key : c.keys()) {
+			oneIsChecked = oneIsChecked || c.get(key).equals(Boolean.TRUE);
+		}
+		if (!oneIsChecked) {
+			c.error("At least one option must be checked.");
+		}
 	}
 
 	private TextArea createProblemOutput() {

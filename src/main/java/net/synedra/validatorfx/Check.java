@@ -42,6 +42,10 @@ public class Check {
 			return (T) dependencies.get(key).getValue();
 		}
 
+		public Iterable<String> keys() {
+			return dependencies.keySet();
+		}
+
 		/** Emit a warning.
 		 * @param message The text to be presented to the user as warning message.
 		 */
