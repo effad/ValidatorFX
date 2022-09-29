@@ -12,13 +12,13 @@ version = '0.3.1'
 repositories {
 	// Use jcenter for resolving dependencies.
 	// You can declare any Maven/Ivy/file repository here.
-	jcenter()
+	mavenCentral()
 }
 
 dependencies {
-	testCompile 'org.junit.jupiter:junit-jupiter-api:5.7.1'
-	testCompile "org.testfx:testfx-junit5:4.0.16-alpha"
-    testCompile "org.testfx:openjfx-monocle:jdk-12.0.1+2" 
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+	testImplementation "org.testfx:testfx-junit5:4.0.16-alpha"
+	testImplementation "org.testfx:openjfx-monocle:jdk-12.0.1+2" 
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
 	
