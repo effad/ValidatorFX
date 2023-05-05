@@ -1,14 +1,22 @@
 package net.synedra.validatorfx;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.lang.ref.Cleaner;
+import java.time.Instant;
+import java.util.concurrent.TimeoutException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -198,6 +206,32 @@ class GraphicDecorationTest extends TestBase {
 		WaitForAsyncUtils.waitForFxEvents();
 		assertFalse(decorationNodeVisible());
 	}
+
+	// https://github.com/effad/ValidatorFX/issues/30
+	SimpleBooleanProperty hboxGarbageCollected = new SimpleBooleanProperty(false);
+	@Test
+	void testDecorationMemLeak() throws TimeoutException, InterruptedException {
+		Cleaner cleaner = Cleaner.create();
+		addAndRemoveHBox(cleaner);
+		Instant timeOut = Instant.now().plusSeconds(10);
+		while (Instant.now().isBefore(timeOut) && !hboxGarbageCollected.get()) {
+			System.gc();
+			Thread.sleep(100);
+		}
+		assertTrue(hboxGarbageCollected.get());
+	}
+	
+	private void addAndRemoveHBox(Cleaner cleaner) {
+		HBox hbox = new HBox();
+		cleaner.register(hbox, () -> hboxGarbageCollected.set(true));
+		fx(() -> root.getChildren().add(hbox));
+		fx(() -> {
+			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
+			decoration.add(hbox);
+		});
+		fx(() -> root.getChildren().remove(hbox));
+	}
+
 	
 	private boolean decorationNodeVisible() {
 		return decorationNode.getScene() != null;

@@ -2,6 +2,7 @@ package net.synedra.validatorfx;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -53,7 +54,7 @@ public class GraphicDecoration implements Decoration {
 		this.pos = position;
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
-		layoutListener = (observable, oldValue, newValue) -> layoutGraphic();
+		layoutListener = new WeakChangeListener<>((observable, oldValue, newValue) -> layoutGraphic());
 		transformListener = (observable, oldValue, newValue) -> layoutGraphic();
 	}
 	
