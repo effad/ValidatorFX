@@ -143,6 +143,31 @@ class GraphicDecorationTest extends TestBase {
 	}
 	
 	@Test
+	void testDecorationStackReuseBySceneChange() {
+		// without decoration, we don't have a decoration pane
+		assertEquals(0, countDecorationStackPanes(target));
+		fx(() -> {
+			GraphicDecoration decoration = new GraphicDecoration(decorationNode);
+			decoration.add(target);
+		});
+		// now we have one
+		assertEquals(1, countDecorationStackPanes(target));
+
+		// Add a second node with decoration
+		Circle secondDecorationNode = new Circle(50, 50, 20);
+		Rectangle secondTarget = new Rectangle(100, 100);
+		fx(() -> {
+			GraphicDecoration decoration = new GraphicDecoration(secondDecorationNode);
+			decoration.add(secondTarget);			
+			root.getChildren().add(secondTarget);
+		});
+		
+		// We must still only have one decoration pane
+		assertEquals(1, countDecorationStackPanes(target));
+	}
+	
+	
+	@Test
 	void testNonSceneNode(FxRobot robot) {
 		HBox hbox = new HBox();
 		fx(() -> {

@@ -100,7 +100,10 @@ public class GraphicDecoration implements Decoration {
 				sceneChangedListener = (observable, oldValue, newValue) -> {
 					if (oldValue == null && newValue != null) {
 						target.sceneProperty().removeListener(sceneChangedListener);
-						setupStack(target);
+						stack = findDecorationPane(target);
+						if (stack == null) {
+							setupStack(target);
+						}
 						code.run();
 					}
 				};
