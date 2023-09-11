@@ -19,6 +19,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.synedra.validatorfx.Check;
+import net.synedra.validatorfx.Check.Context;
 import net.synedra.validatorfx.Decoration;
 import net.synedra.validatorfx.DefaultDecoration;
 import net.synedra.validatorfx.TooltipWrapper;
@@ -57,6 +58,12 @@ public class ValidatorFXDemo extends Application {
 		signUp.setOnAction(e -> signUp());
 		
 		TextField userTextField = new TextField();
+		validator.createCheck()
+			.withMethod(this::required)
+			.dependsOn("text", userTextField.textProperty())
+			.decorates(userTextField)
+			.immediate()
+		;
 		validator.createCheck()
 			.withMethod(c -> {
 				String userName = c.get("username");
@@ -221,5 +228,12 @@ public class ValidatorFXDemo extends Application {
 			DefaultDecoration.setFactory(DefaultDecoration::createStyleClassDecoration);
 		}
 		launch();
+	}
+
+	private void required(Context context) {
+		String text = context.get("text");
+		if (text == null || text.isEmpty()) {
+			context.error("This field is required.");
+		}
 	}
 }
