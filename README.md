@@ -4,6 +4,7 @@ Form validation made easy.
 
 [![Actions Status](https://github.com/effad/ValidatorFX/workflows/Test/badge.svg)](https://github.com/effad/ValidatorFX/actions)
 [![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![JFXCentral](https://img.shields.io/badge/Find_me_on-JFXCentral-blue?logo=googlechrome&logoColor=white)](https://www.jfx-central.com/libraries/validatorfx)
 
 
 ## Introduction
