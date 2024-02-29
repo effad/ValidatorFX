@@ -27,7 +27,7 @@ The central class of ValidatorFX is `Validator` which contains a number of `Chec
 
 ## Example
 
-Heres a minimal complete example of how ValidatorFX is used:
+Here is a minimal complete example of how ValidatorFX is used:
 
 ```java
 
