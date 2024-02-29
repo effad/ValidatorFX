@@ -26,7 +26,8 @@ public class Check {
 	private List<Node> targets = new ArrayList<>(1);
 	private List<Decoration> decorations = new ArrayList<>();
 	private Function<ValidationMessage, Decoration> decorationFactory;
-	private ChangeListener<? super Object> dependencyListener;
+	private ChangeListener<? super Object> immediateListener;
+	private ChangeListener<? super Object> immediateClearingListener;
 	
 	public class Context {
 		
@@ -64,7 +65,6 @@ public class Check {
 	public Check() {
 		validationResultProperty.set(new ValidationResult());
 		decorationFactory = DefaultDecoration.getFactory();
-		dependencyListener = (obs, oldv, newv) -> recheck();
 	}
 		
 	public Check withMethod(Consumer<Context> checkMethod) {
@@ -88,26 +88,34 @@ public class Check {
 	}
 	
 	/** Sets this check to be immediately evaluated if one of its dependencies changes. 
-	 * This method must be called last. 
+	 * This method must be called last and cannot be used with immediateClearing()
 	 */
 	public Check immediate() {
+		immediateListener = (obs, oldv, newv) -> recheck();
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
-			dependency.addListener(dependencyListener);
+			dependency.addListener(immediateListener);
 		}
 		Platform.runLater(this::recheck);	// to circumvent problems with decoration pane vs. dialog
 		return this;
 	}
 	
+	/** Sets this check to be immediately cleared (but not rechecked) if one of its dependencies changes. 
+	 * This method must be called last and cannot be used with immediate()
+	 */
+	public Check immediateClearing() {
+		immediateClearingListener = (obs, oldv, newv) -> clear();
+		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
+			dependency.addListener(immediateClearingListener);
+		}
+		return this;
+	}
+	
+	
 	/** Evaluate all dependencies and apply decorations of this check. You should not normally need to call this method directly. */
 	public void recheck() {
 		nextValidationResult = new ValidationResult();
 		checkMethod.accept(new Context());
-		for (Node target : targets) {
-			for (Decoration decoration : decorations) {
-				decoration.remove(target);				
-			}
-		}
-		decorations.clear();
+		removeDecorations();
 		for (Node target : targets) {
 			for (ValidationMessage validationMessage : nextValidationResult.getMessages()) {
 				Decoration decoration = decorationFactory.apply(validationMessage);
@@ -115,6 +123,26 @@ public class Check {
 				decoration.add(target);				
 			}
 		}
+		setNextValidationResult();
+	}
+	
+	/** Clear this check, i.e. remove its decorations and set empty validation result. */
+	public void clear() {
+		removeDecorations();
+		nextValidationResult = new ValidationResult();
+		setNextValidationResult();
+	}
+	
+	private void removeDecorations() {
+		for (Node target : targets) {
+			for (Decoration decoration : decorations) {
+				decoration.remove(target);				
+			}
+		}
+		decorations.clear();		
+	}
+	
+	private void setNextValidationResult() {
 		if (!nextValidationResult.getMessages().equals(getValidationResult().getMessages())) {
 			validationResultProperty.set(nextValidationResult);
 		}
@@ -133,5 +161,6 @@ public class Check {
 	public ReadOnlyObjectProperty<ValidationResult> validationResultProperty() {
 	    return validationResultProperty.getReadOnlyProperty();
 	}
+
 		
 }

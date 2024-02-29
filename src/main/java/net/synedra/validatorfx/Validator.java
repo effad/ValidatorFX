@@ -94,6 +94,13 @@ public class Validator {
 		}
 		return ! containsErrors();
 	}
+	
+	/** Remove all decorations from nodes. */
+	public void clear() {
+		for (Check check : checks.keySet()) {
+			check.clear();
+		}
+	}
 
 	private void refreshProperties() {
 		ValidationResult nextResult = new ValidationResult();
@@ -143,6 +150,6 @@ public class Validator {
 			return str.toString();
 		}, validationResultProperty);
 	}
-	
+
 
 }

@@ -65,6 +65,27 @@ class CheckTest {
 		checkMessage(c, Severity.ERROR, "Must not be bar");
 	}
 	
+	@Test
+	void testImmediateClearing() {
+		StringProperty text = new SimpleStringProperty("foo"); 
+		Check c = new Check()
+			.withMethod(this::check2)
+			.dependsOn("content", text)
+			.immediateClearing();
+				
+		checkNoMessage(c);
+		
+		c.recheck();
+		checkMessage(c, Severity.ERROR, "Must not be foo");
+		
+		text.set("bar");
+		checkNoMessage(c);
+		
+		c.recheck();
+		checkMessage(c, Severity.ERROR, "Must not be bar");
+	}
+	
+	
 	private void check2(Check.Context c) {
 		c.error("Must not be " + c.get("content"));
 	}
@@ -103,4 +124,10 @@ class CheckTest {
 		assertEquals(text, messages.get(0).getText());
 		assertEquals(severity, messages.get(0).getSeverity());		
 	}
+	
+	private void checkNoMessage(Check c) {
+		List<ValidationMessage> messages = c.getValidationResult().getMessages();
+		assertEquals(0, messages.size());
+	}
+	
 }
