@@ -21,7 +21,7 @@ The central class of ValidatorFX is `Validator` which contains a number of `Chec
 <dependency>
    <groupId>net.synedra</groupId>
    <artifactId>validatorfx</artifactId>
-   <version>0.4.2</version>
+   <version>0.5.0</version>
 </dependency>
 ```
 
@@ -106,7 +106,8 @@ A dependency named `username` is declared here. You can call dependsOn multiple 
       })
 ```
 
-This defines the check to be executed. Note how the dependency declared above can easily be accessed here (of course we could also have used `userTextField.getText()` instead of `c.get("username")` here. 
+This defines the check to be executed. Note how the dependency declared above can easily be accessed here (of course we could also have used `userTextField.getText()` instead of `c.get("username")` here.
+Since ValidatorFX-0.5.0 you may also call withMethod multiple times thus installing multiple checks to be executed. All given check methods will be executed (i.e. no short circuit evaluation).
 
 ```java
       .decorates(userTextField)
@@ -119,6 +120,7 @@ This line tells ValidatorFX to decorate the text field itself. You can call deco
 ```
 
 The check is declared immediate by this line which means it will be evaluated constantly and `userTextField` will be decorated as soon as the check condition changes. Without this line you can validate on submit.
+You may also want to use explicit validation (i.e. a call to `Validator.validate()`)) at first and then switch to immediate mode or use `immediateClear()` which will immediately clear validation / decoration when the user gives input. 
 
 Here's a screenshot of the example in action:
 
