@@ -1,6 +1,7 @@
 package net.synedra.validatorfx.demo;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -19,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.DefaultDecoration;
 import net.synedra.validatorfx.Validator;
 
@@ -62,6 +64,7 @@ public class LateImmediateDemo extends Application {
 					c.error("Username is required.");
 				}
 			})
+			.withMethod(required("username"))
 			.dependsOn("username", userTextField.textProperty())
 			.decorates(userTextField)
 		;
@@ -71,10 +74,8 @@ public class LateImmediateDemo extends Application {
 				if (!c.get("password").equals(c.get("passwordConfirmation"))) {
 					c.error("Passwords do not match");
 				}
-				if (((String) c.get("password")).isBlank()) {
-					c.error("Password is required.");
-				}
 			})
+			.withMethod(required("password"))
 			.dependsOn("password", password.textProperty())
 			.dependsOn("passwordConfirmation", passwordConfirmation.textProperty())
 			.decorates(password)
@@ -95,6 +96,15 @@ public class LateImmediateDemo extends Application {
 		
 		primaryStage.setScene(scene);		
 		primaryStage.show();		
+	}
+
+	private Consumer<Check.Context> required(String key) {
+		return c -> {
+			String text = c.get(key);
+			if (text.trim().isEmpty()) {
+				c.error(key + " cannot be empty");
+			}
+		};
 	}
 
 	private GridPane createGrid() {

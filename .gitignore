@@ -10,3 +10,6 @@ build
 bin
 .settings
 *~
+
+# Ignore IntelliJ stuff
+/.idea

@@ -20,7 +20,7 @@ import javafx.scene.Node;
 public class Check {
 	
 	private Map<String, ObservableValue<? extends Object>> dependencies = new HashMap<>(1);
-	private Consumer<Context> checkMethod;
+	private List<Consumer<Context>> checkMethods = new ArrayList<>();
     private ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>();
 	private ValidationResult nextValidationResult = new ValidationResult();
 	private List<Node> targets = new ArrayList<>(1);
@@ -66,9 +66,13 @@ public class Check {
 		validationResultProperty.set(new ValidationResult());
 		decorationFactory = DefaultDecoration.getFactory();
 	}
-		
+	
+	/** Add a method to be called in order to perform this check.
+	 * If called multiple times, multiple check methods can be registered.
+	 * @param checkMethod The code to be called in order to check the validity of this Check.
+	 */
 	public Check withMethod(Consumer<Context> checkMethod) {
-		this.checkMethod = checkMethod;
+		checkMethods.add(checkMethod);
 		return this;
 	}
 	
@@ -138,7 +142,8 @@ public class Check {
 	/** Evaluate all dependencies and apply decorations of this check. You should not normally need to call this method directly. */
 	public void recheck() {
 		nextValidationResult = new ValidationResult();
-		checkMethod.accept(new Context());
+		Context context = new Context();
+		checkMethods.forEach(checkMethod -> checkMethod.accept(context));
 		removeDecorations();
 		for (Node target : targets) {
 			for (ValidationMessage validationMessage : nextValidationResult.getMessages()) {
