@@ -27,7 +27,7 @@ public class Check {
 	private List<Decoration> decorations = new ArrayList<>();
 	private Function<ValidationMessage, Decoration> decorationFactory;
 	private ChangeListener<? super Object> immediateListener;
-	private ChangeListener<? super Object> immediateClearingListener;
+	private ChangeListener<? super Object> immediateClearListener;
 	
 	public class Context {
 		
@@ -88,9 +88,10 @@ public class Check {
 	}
 	
 	/** Sets this check to be immediately evaluated if one of its dependencies changes. 
-	 * This method must be called last and cannot be used with immediateClearing()
+	 * This method must be called after setting dependencies.
 	 */
 	public Check immediate() {
+		removeAllListeners();
 		immediateListener = (obs, oldv, newv) -> recheck();
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
 			dependency.addListener(immediateListener);
@@ -99,17 +100,40 @@ public class Check {
 		return this;
 	}
 	
+	
 	/** Sets this check to be immediately cleared (but not rechecked) if one of its dependencies changes. 
-	 * This method must be called last and cannot be used with immediate()
+	 * This method must be called after setting dependencies.
 	 */
-	public Check immediateClearing() {
-		immediateClearingListener = (obs, oldv, newv) -> clear();
+	public Check immediateClear() {
+		removeAllListeners();
+		immediateClearListener = (obs, oldv, newv) -> clear();
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
-			dependency.addListener(immediateClearingListener);
+			dependency.addListener(immediateClearListener);
 		}
 		return this;
 	}
 	
+	/** Sets this check to not be reevaluated automatically (i.e. recheck must be called explicetly).
+	 * This mode is the default.
+	 * This method must be called after setting dependencies.
+	 */
+	public Check explicit() {
+		removeAllListeners();
+		return this;
+	}
+	
+	private void removeAllListeners() {
+		removeListener(immediateListener);
+		removeListener(immediateClearListener);
+	}
+	
+	private void removeListener(ChangeListener<? super Object> listener) {
+		if (listener != null) {
+			for (ObservableValue<? extends Object> dependency : dependencies.values()) {
+				dependency.removeListener(listener);
+			}			
+		}
+	}
 	
 	/** Evaluate all dependencies and apply decorations of this check. You should not normally need to call this method directly. */
 	public void recheck() {
@@ -161,6 +185,4 @@ public class Check {
 	public ReadOnlyObjectProperty<ValidationResult> validationResultProperty() {
 	    return validationResultProperty.getReadOnlyProperty();
 	}
-
-		
 }

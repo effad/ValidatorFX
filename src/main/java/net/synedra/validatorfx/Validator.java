@@ -95,10 +95,31 @@ public class Validator {
 		return ! containsErrors();
 	}
 	
-	/** Remove all decorations from nodes. */
+	/** Clear all validations (i.e. remove decorations an clear validations result. */
 	public void clear() {
 		for (Check check : checks.keySet()) {
 			check.clear();
+		}
+	}
+	
+	/** Set all checks (that are currently added to the validator) to immediate mode. */
+	public void immediate() {
+		for (Check check : checks.keySet()) {
+			check.immediate();
+		}
+	}
+	
+	/** Set all checks (that are currently added to the validator) to immediate clear mode. */
+	public void immediateClear() {
+		for (Check check : checks.keySet()) {
+			check.immediateClear();
+		}
+	}
+	
+	/** Set all checks (that are currently added to the validator) to explicit mode. */
+	public void explicit() {
+		for (Check check : checks.keySet()) {
+			check.explicit();
 		}
 	}
 

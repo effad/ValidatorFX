@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -34,7 +35,7 @@ public class ValidatorFXDemo extends Application {
 	private Validator validator = new Validator();
 	private StringBinding problemsText;
 	private GridPane grid;
-
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("ValidatorFX Demo");
@@ -51,11 +52,6 @@ public class ValidatorFXDemo extends Application {
 			validator.containsErrorsProperty(), 
 			Bindings.concat("Cannot sign up:\n", validator.createStringBinding())
 		);
-		
-		HBox bottomBox = new HBox(10);
-		bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
-		bottomBox.getChildren().add(signUpWrapper);
-		signUp.setOnAction(e -> signUp());
 		
 		TextField userTextField = new TextField();
 		validator.createCheck()
@@ -146,14 +142,40 @@ public class ValidatorFXDemo extends Application {
 
 		TextArea problems = createProblemOutput();
 		grid.add(problems, 0, 6, 2, 1);
+		
+		Button clear = new Button("Clear validation");
+		clear.setOnAction((e) -> validator.clear());
 
-		grid.add(bottomBox, 1, 8);
+		ComboBox<String> validationModeCombo = new ComboBox<>(FXCollections.observableArrayList("immediate", "immediateClear", "on submit"));
+		validationModeCombo.setValue("immediate");
+		validationModeCombo.valueProperty().addListener((obs, oldv, newv) -> changeMode(newv));
+		
+		HBox bottomLeftBox = new HBox(10);
+		bottomLeftBox.setAlignment(Pos.BOTTOM_LEFT);
+		bottomLeftBox.getChildren().addAll(validationModeCombo, clear);
+		grid.add(bottomLeftBox, 0, 8);
+
+		HBox bottomRightBox = new HBox(10);
+		bottomRightBox.setAlignment(Pos.BOTTOM_RIGHT);
+		bottomRightBox.getChildren().add(signUpWrapper);
+		signUp.setOnAction(e -> signUp());
+		grid.add(bottomRightBox, 1, 8);
 		
 		Scene scene = new Scene(grid);
 		scene.getStylesheets().add(getClass().getResource("demo.css").toExternalForm());
 		
 		primaryStage.setScene(scene);		
 		primaryStage.show();		
+	}
+	
+	private void changeMode(String modeString) {
+		if ("immediate".equals(modeString)) {
+			validator.immediate();
+		} else if ("immediateClear".equals(modeString)) {
+			validator.immediateClear();
+		} else if ("on submit".equals(modeString)) {
+			validator.explicit();
+		}
 	}
 	
 	private void checkSum(Check.Context c) {
@@ -220,7 +242,9 @@ public class ValidatorFXDemo extends Application {
 	}
 	
 	private void signUp() {
-		grid.getChildren().setAll(new Text("You're now signed in."));
+		if (validator.validate()) {
+			grid.getChildren().setAll(new Text("You're now signed in."));
+		}
 	}
 
 	public static void main(String[] args) {

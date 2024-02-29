@@ -22,16 +22,17 @@ import javafx.stage.Stage;
 import net.synedra.validatorfx.DefaultDecoration;
 import net.synedra.validatorfx.Validator;
 
-/** ValidateOnSubmit demonstrates explicit validation.
+/** LateImmediateDemo demonstrates immediate-after-first-validation: 
+ * First validation happens "on submit", afterwards validation is set to immediate. 
  * @author r.lichtenberger@synedra.com
  */
-public class ValidateOnSubmit extends Application {
+public class LateImmediateDemo extends Application {
 
 	private Validator validator = new Validator();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("Validate on submit demo");
+		primaryStage.setTitle("Late immediate demo");
 		
 		GridPane grid = createGrid();
 		
@@ -43,17 +44,22 @@ public class ValidateOnSubmit extends Application {
 		PasswordField password = new PasswordField();
 		PasswordField passwordConfirmation = new PasswordField();
 				
+		Button reset = new Button("Reset to on-submit");
+		reset.setOnAction(this::resetClicked);
 		Button signUp = new Button("Sign up");
 		signUp.setOnAction(this::signUpClicked);
 		HBox bottomBox = new HBox(10);
 		bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
-		bottomBox.getChildren().add(signUp);
+		bottomBox.getChildren().addAll(reset, signUp);
 		
 		validator.createCheck()
 			.withMethod(c -> {
 				String userName = c.get("username");
 				if (!userName.toLowerCase().equals(userName)) {
 					c.error("Please use only lowercase letters.");
+				}
+				if (userName.isBlank()) {
+					c.error("Username is required.");
 				}
 			})
 			.dependsOn("username", userTextField.textProperty())
@@ -64,6 +70,9 @@ public class ValidateOnSubmit extends Application {
 			.withMethod(c -> {
 				if (!c.get("password").equals(c.get("passwordConfirmation"))) {
 					c.error("Passwords do not match");
+				}
+				if (((String) c.get("password")).isBlank()) {
+					c.error("Password is required.");
 				}
 			})
 			.dependsOn("password", password.textProperty())
@@ -97,6 +106,11 @@ public class ValidateOnSubmit extends Application {
 		return grid;
 	}
 	
+	private void resetClicked(ActionEvent e) {
+		validator.explicit();
+		validator.clear();
+	}
+	
 	private void signUpClicked(ActionEvent e) {
 		if (validator.validate()) {
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -105,6 +119,8 @@ public class ValidateOnSubmit extends Application {
 			alert.setContentText("You successfully signed up");
 
 			alert.showAndWait();		
+		} else {
+			validator.immediate();
 		}
 	}
 

@@ -32,7 +32,7 @@ public class HybridValidateDemo extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("Validate on submit demo");
+		primaryStage.setTitle("Hybrid validate demo");
 		
 		GridPane grid = createGrid();
 		
@@ -64,7 +64,7 @@ public class HybridValidateDemo extends Application {
 			})
 			.dependsOn("username", userTextField.textProperty())
 			.decorates(userTextField)
-			.immediateClearing()
+			.immediateClear()
 		;
 		
 		validator.createCheck()
@@ -80,7 +80,7 @@ public class HybridValidateDemo extends Application {
 			.dependsOn("passwordConfirmation", passwordConfirmation.textProperty())
 			.decorates(password)
 			.decorates(passwordConfirmation)
-			.immediateClearing()
+			.immediateClear()
 		;
 		
 		grid.add(sceneTitle, 0, 0, 2, 1);

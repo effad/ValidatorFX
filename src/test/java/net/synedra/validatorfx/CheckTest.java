@@ -57,7 +57,7 @@ class CheckTest {
 			.dependsOn("content", text)
 			.immediate();
 		
-		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait 
 		
 		checkMessage(c, Severity.ERROR, "Must not be foo");
 		
@@ -66,12 +66,12 @@ class CheckTest {
 	}
 	
 	@Test
-	void testImmediateClearing() {
+	void testImmediateClear() {
 		StringProperty text = new SimpleStringProperty("foo"); 
 		Check c = new Check()
 			.withMethod(this::check2)
 			.dependsOn("content", text)
-			.immediateClearing();
+			.immediateClear();
 				
 		checkNoMessage(c);
 		
@@ -98,7 +98,7 @@ class CheckTest {
 			.decorates(textfield)
 			.immediate()
 		;
-		WaitForAsyncUtils.waitForFxEvents(); // .install() will call the initial update delayed, so we have to wait 
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait 
 		assertEquals(0, c.getValidationResult().getMessages().size());
 		
 		robot.clickOn(".text-field");

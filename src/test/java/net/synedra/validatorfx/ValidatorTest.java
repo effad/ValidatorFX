@@ -88,7 +88,7 @@ class ValidatorTest extends TestBase {
 	}
 	
 	@Test
-	void testValidateOnSubmit(FxRobot robot) {
+	void testExplicitValidate(FxRobot robot) {
 		TextField textfield = new TextField();
 		fx(() -> root.getChildren().add(textfield));
 		
@@ -118,6 +118,59 @@ class ValidatorTest extends TestBase {
 	}
 	
 	@Test
+	void testModeChange(FxRobot robot) {
+		TextField textfield = new TextField();
+		fx(() -> root.getChildren().add(textfield));
+		
+		Validator validator = new Validator();
+		validator.createCheck()
+			.withMethod(this::noVowels)
+			.dependsOn("content", textfield.textProperty())
+			.decorates(textfield)
+		;
+		
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 1);
+		// Default mode is explicit ...
+		assertEquals(0, validator.getValidationResult().getMessages().size());
+
+		// Immediate will show the violating vowel
+		fx(validator::immediate);
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait 
+		assertEquals(1, validator.getValidationResult().getMessages().size());
+
+		// If we clear no errors are there anymore
+		fx(validator::clear);
+		assertEquals(0, validator.getValidationResult().getMessages().size());
+		
+		// Typing will immediately show the error again
+		robot.type(KeyCode.B, 1);
+		WaitForAsyncUtils.waitForFxEvents();  
+		assertEquals(1, validator.getValidationResult().getMessages().size());
+		
+		// Switching to immediateClear will not change anything per se ...
+		fx(validator::immediateClear);
+		// But typing will clear the error
+		robot.type(KeyCode.B, 1);
+		assertEquals(0, validator.getValidationResult().getMessages().size());
+		// ... until we explicitly validate 
+		fx(validator::validate);
+		assertEquals(1, validator.getValidationResult().getMessages().size());
+		
+		// Clearing errors & switching to explicit mode ...
+		fx(validator::clear);
+		fx(validator::explicit);
+		robot.type(KeyCode.B, 1);
+		assertEquals(0, validator.getValidationResult().getMessages().size());
+		fx(validator::validate);
+		assertEquals(1, validator.getValidationResult().getMessages().size());
+		// Typing no longer make errors disappear ...
+		robot.type(KeyCode.C, 1);
+		assertEquals(1, validator.getValidationResult().getMessages().size());
+	}
+	
+	
+	@Test
 	void testStringProperty(FxRobot robot) {
 		TextField textfield = new TextField();
 		fx(() -> root.getChildren().add(textfield));
@@ -140,11 +193,13 @@ class ValidatorTest extends TestBase {
 		StringBinding errors = validator.createStringBinding("* ", "\n", Severity.ERROR);
 		StringBinding errors2 = validator.createStringBinding("* ", "\n");
 		StringBinding warnings = validator.createStringBinding("* ", "\n", Severity.WARNING);
+		StringBinding defaultBinding = validator.createStringBinding();
 		
 		assertEquals("", all.get());
 		assertEquals("", errors.get());
 		assertEquals("", errors2.get());
 		assertEquals("", warnings.get());
+		assertEquals("", defaultBinding.get());
 		
 		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait 
 		
@@ -155,12 +210,15 @@ class ValidatorTest extends TestBase {
 		assertEquals("* Txt cntns vwls", errors.get());
 		assertEquals("* Txt cntns vwls", errors2.get());
 		assertEquals("", warnings.get());	
+		assertEquals("• Txt cntns vwls", defaultBinding.get());
+
 		
 		robot.type(KeyCode.A, 6);
 		assertEquals("* Too long\n* Txt cntns vwls", all.get());
 		assertEquals("* Txt cntns vwls", errors.get());
 		assertEquals("* Txt cntns vwls", errors2.get());
 		assertEquals("* Too long", warnings.get());
+		assertEquals("• Txt cntns vwls", defaultBinding.get());
 	}
 	
 	private void maxSize(Check.Context c) {
