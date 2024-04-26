@@ -12,6 +12,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Node;
 
 /** A check represents a check for validity in a form.
@@ -96,7 +97,7 @@ public class Check {
 	 */
 	public Check immediate() {
 		removeAllListeners();
-		immediateListener = (obs, oldv, newv) -> recheck();
+		immediateListener = new WeakChangeListener<>((obs, oldv, newv) -> recheck());
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
 			dependency.addListener(immediateListener);
 		}
@@ -110,7 +111,7 @@ public class Check {
 	 */
 	public Check immediateClear() {
 		removeAllListeners();
-		immediateClearListener = (obs, oldv, newv) -> clear();
+		immediateClearListener = new WeakChangeListener<>((obs, oldv, newv) -> clear());
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
 			dependency.addListener(immediateClearListener);
 		}
