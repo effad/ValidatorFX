@@ -28,7 +28,9 @@ public class Check {
 	private List<Decoration> decorations = new ArrayList<>();
 	private Function<ValidationMessage, Decoration> decorationFactory;
 	private ChangeListener<? super Object> immediateListener;
+	private ChangeListener<? super Object> immediateWeakListener;
 	private ChangeListener<? super Object> immediateClearListener;
+	private ChangeListener<? super Object> immediateClearWeakListener;
 	
 	public class Context {
 		
@@ -97,9 +99,10 @@ public class Check {
 	 */
 	public Check immediate() {
 		removeAllListeners();
-		immediateListener = new WeakChangeListener<>((obs, oldv, newv) -> recheck());
+		immediateListener = (obs, oldv, newv) -> recheck();
+		immediateWeakListener = new WeakChangeListener<>(immediateListener);
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
-			dependency.addListener(immediateListener);
+			dependency.addListener(immediateWeakListener);
 		}
 		Platform.runLater(this::recheck);	// to circumvent problems with decoration pane vs. dialog
 		return this;
@@ -111,9 +114,10 @@ public class Check {
 	 */
 	public Check immediateClear() {
 		removeAllListeners();
-		immediateClearListener = new WeakChangeListener<>((obs, oldv, newv) -> clear());
+		immediateClearListener = (obs, oldv, newv) -> clear();
+		immediateClearWeakListener = new WeakChangeListener<>(immediateClearListener);
 		for (ObservableValue<? extends Object> dependency : dependencies.values()) {
-			dependency.addListener(immediateClearListener);
+			dependency.addListener(immediateClearWeakListener);
 		}
 		return this;
 	}
@@ -128,8 +132,8 @@ public class Check {
 	}
 	
 	private void removeAllListeners() {
-		removeListener(immediateListener);
-		removeListener(immediateClearListener);
+		removeListener(immediateWeakListener);
+		removeListener(immediateClearWeakListener);
 	}
 	
 	private void removeListener(ChangeListener<? super Object> listener) {
