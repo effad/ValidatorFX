@@ -3,6 +3,7 @@ package net.synedra.validatorfx;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -164,6 +165,37 @@ class CheckTest {
 	private void checkNoMessage(Check c) {
 		List<ValidationMessage> messages = c.getValidationResult().getMessages();
 		assertEquals(0, messages.size());
+	}
+
+	@Test
+	void testAnyMatches(FxRobot robot) {
+		Check c = new Check()
+				.dependsOn("content", textfield.textProperty())
+				.dependsOn("width", textfield.widthProperty())
+				.anyMatches(Severity.WARNING, "warn", Objects::nonNull).immediate();
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait
+		assertEquals(0, c.getValidationResult().getMessages().size());
+
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 4);
+		checkNoMessage(c);
+	}
+
+	@Test
+	void testAtLeastOneMustBeTrue(FxRobot robot) {
+		Check c = new Check()
+				.dependsOn("visible", textfield.visibleProperty())
+				.dependsOn("disabled", textfield.disabledProperty())
+				.atLeastOneMustBeTrue(Severity.WARNING, "warn").immediate();
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait
+		assertEquals(0, c.getValidationResult().getMessages().size());
+
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 4);
+		checkNoMessage(c);
+		textfield.setVisible(false);
+		WaitForAsyncUtils.waitForFxEvents();
+		checkMessage(c, Severity.WARNING, "warn");
 	}
 	
 }

@@ -161,8 +161,8 @@ public class Check {
 
     private Predicate<Object> isBooleanPredicate() {
         return x -> {
-            if (x instanceof Boolean bool) {
-                return bool;
+            if (x instanceof Boolean) {
+                return (Boolean) x;
             } else return false;
         };
     }
