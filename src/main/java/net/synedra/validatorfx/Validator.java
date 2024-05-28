@@ -172,5 +172,7 @@ public class Validator {
 		}, validationResultProperty);
 	}
 
-
+    public DefaultChecks defaultChecks() {
+        return new DefaultChecks(this);
+    }
 }

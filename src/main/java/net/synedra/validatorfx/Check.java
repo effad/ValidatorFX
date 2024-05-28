@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -78,6 +81,52 @@ public class Check {
 		checkMethods.add(checkMethod);
 		return this;
 	}
+
+    private void addMessage(Context context, Severity severity, String validationMessage) {
+        if (severity == Severity.ERROR) {
+            context.error(validationMessage);
+        } else if (severity == Severity.WARNING) {
+            context.warn(validationMessage);
+        }
+    }
+
+    private void checkForAllDependencies(Context context, Severity severity, String validationMessage, Function<Stream<Object>, Boolean> matcher) {
+        if (matcher.apply(StreamSupport.stream(context.keys().spliterator(), false).map(dependencies::get).map(ObservableValue::getValue))) {
+            addMessage(context, severity, validationMessage);
+        }
+    }
+
+    public Check anyMatches(Severity severity, String validationMessage, Predicate<Object> predicate) {
+        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> stream.noneMatch(predicate)));
+    }
+
+    public Check atLeastOneMustBeTrue(Severity severity, String validationMessage) {
+        return anyMatches(severity, validationMessage, isBooleanPredicate());
+    }
+
+    public Check allMustBeTrue(Severity severity, String validationMessage) {
+        return allMatch(severity, validationMessage, isBooleanPredicate());
+    }
+
+    public Check noneMustBeTrue(Severity severity, String validationMessage) {
+        return noneMatch(severity, validationMessage, isBooleanPredicate());
+    }
+
+    private Predicate<Object> isBooleanPredicate() {
+        return x -> {
+            if (x instanceof Boolean bool) {
+                return bool;
+            } else return false;
+        };
+    }
+
+    public Check allMatch(Severity severity, String validationMessage, Predicate<Object> predicate) {
+        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> !stream.allMatch(predicate)));
+    }
+
+    public Check noneMatch(Severity severity, String validationMessage, Predicate<Object> predicate) {
+        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> stream.anyMatch(predicate)));
+    }
 	
 	public Check dependsOn(String key, ObservableValue<? extends Object> dependency) {
 		dependencies.put(key, dependency);
