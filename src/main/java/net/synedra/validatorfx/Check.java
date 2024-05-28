@@ -96,18 +96,65 @@ public class Check {
         }
     }
 
+    /**
+     * Creates a check that checks whether any registered dependencies match the Predicate
+     * @param severity of the validation
+     * @param validationMessage that should be displayed for a failed validation
+     * @param predicate to determine whether a single dependency fits the required criteria
+     * @return self for methodChaining
+     */
     public Check anyMatches(Severity severity, String validationMessage, Predicate<Object> predicate) {
         return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> stream.noneMatch(predicate)));
     }
 
+    /**
+     * Creates a check that checks whether all registered dependencies match the Predicate
+     * @param severity of the validation
+     * @param validationMessage that should be displayed for a failed validation
+     * @param predicate to determine whether a single dependency fits the required criteria
+     * @return self for methodChaining
+     */
+    public Check allMatch(Severity severity, String validationMessage, Predicate<Object> predicate) {
+        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> !stream.allMatch(predicate)));
+    }
+
+    /**
+     * Creates a check that checks whether none of the registered dependencies match the Predicate
+     * @param severity of the validation
+     * @param validationMessage that should be displayed for a failed validation
+     * @param predicate to determine whether a single dependency fits the required criteria
+     * @return self for methodChaining
+     */
+    public Check noneMatch(Severity severity, String validationMessage, Predicate<Object> predicate) {
+        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> stream.anyMatch(predicate)));
+    }
+
+    /**
+     * Creates a check that checks whether any registered dependency is a boolean and true
+     * @param severity of the validation
+     * @param validationMessage that should be displayed for a failed validation
+     * @return self for methodChaining
+     */
     public Check atLeastOneMustBeTrue(Severity severity, String validationMessage) {
         return anyMatches(severity, validationMessage, isBooleanPredicate());
     }
 
+    /**
+     * Creates a check that checks whether all registered dependencies are boolean and true
+     * @param severity of the validation
+     * @param validationMessage that should be displayed for a failed validation
+     * @return self for methodChaining
+     */
     public Check allMustBeTrue(Severity severity, String validationMessage) {
         return allMatch(severity, validationMessage, isBooleanPredicate());
     }
 
+    /**
+     * Creates a check that checks whether all registered boolean dependencies are false
+     * @param severity of the validation
+     * @param validationMessage that should be displayed for a failed validation
+     * @return self for methodChaining
+     */
     public Check noneMustBeTrue(Severity severity, String validationMessage) {
         return noneMatch(severity, validationMessage, isBooleanPredicate());
     }
@@ -118,14 +165,6 @@ public class Check {
                 return bool;
             } else return false;
         };
-    }
-
-    public Check allMatch(Severity severity, String validationMessage, Predicate<Object> predicate) {
-        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> !stream.allMatch(predicate)));
-    }
-
-    public Check noneMatch(Severity severity, String validationMessage, Predicate<Object> predicate) {
-        return withMethod(context -> checkForAllDependencies(context, severity, validationMessage, stream -> stream.anyMatch(predicate)));
     }
 	
 	public Check dependsOn(String key, ObservableValue<? extends Object> dependency) {

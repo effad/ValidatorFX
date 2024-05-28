@@ -172,6 +172,10 @@ public class Validator {
 		}, validationResultProperty);
 	}
 
+	/**
+	 * Way to access frequently used checks
+	 * @return Accessor for default-check methods
+	 */
     public DefaultChecks defaultChecks() {
         return new DefaultChecks(this);
     }
