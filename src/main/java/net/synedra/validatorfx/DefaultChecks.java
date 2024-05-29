@@ -1,6 +1,6 @@
 package net.synedra.validatorfx;
 
-import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 
@@ -26,9 +26,9 @@ public class DefaultChecks {
      * @param <T>       of the passed property
      * @return self for methodChaining
      */
-    public <T> Check createNonNullCheck(Property<T> property, Severity severity, Node decorated) {
+    public <T> Check createNonNullCheck(ReadOnlyProperty<T> property, Severity severity, Node decorated) {
         Function<T, String> messageCreator = t -> String.format("%s mustn't be null", property.getName());
-        Predicate<T> notNull = Objects::nonNull;
+        Predicate<T> notNull = Objects::isNull;
         return createCheck(property, severity, decorated, messageCreator, notNull);
     }
 
@@ -40,7 +40,7 @@ public class DefaultChecks {
      * @param <T>      of the passed property
      * @return self for methodChaining
      */
-    public <T> Check createNonNullCheck(Property<T> property, Severity severity) {
+    public <T> Check createNonNullCheck(ReadOnlyProperty<T> property, Severity severity) {
         return createNonNullCheck(property, severity, null);
     }
 
@@ -80,7 +80,7 @@ public class DefaultChecks {
      */
     public Check createMinimumLengthCheck(StringProperty property, Severity severity, Node decorated, int minimumLength) {
         Function<String, String> messageCreator = string -> String.format("%s with value of %s should be at least %d characters long", property.getName(), property.get(), minimumLength);
-        Predicate<String> lengthCheck = string -> string != null && string.length() >= minimumLength;
+        Predicate<String> lengthCheck = string -> string != null && string.length() < minimumLength;
         return createCheck(property, severity, decorated, messageCreator, lengthCheck);
     }
 
@@ -107,7 +107,7 @@ public class DefaultChecks {
      */
     public Check createMaximumLengthCheck(StringProperty property, Severity severity, Node decorated, int maximumLength) {
         Function<String, String> messageCreator = string -> String.format("%s with value of %s should be at most %d characters long", property.getName(), property.get(), maximumLength);
-        Predicate<String> lengthCheck = string -> string != null && string.length() <= maximumLength;
+        Predicate<String> lengthCheck = string -> string != null && string.length() > maximumLength;
         return createCheck(property, severity, decorated, messageCreator, lengthCheck);
     }
 
@@ -135,8 +135,8 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public <T> Check createIsAssignableToCheck(StringProperty property, Severity severity, Node decorated, Function<String, Optional<T>> mapper, Function<String, String> messageCreator) {
-        Function<String, String> alternativeMessageCreator = string -> String.format("%s is not assignable to %s", property.getName(), mapper.apply(string));
-        Predicate<String> instanceCheck = string -> mapper.apply(string).isPresent();
+        Function<String, String> alternativeMessageCreator = string -> String.format("%s is not assignable", property.getName());
+        Predicate<String> instanceCheck = string -> mapper.apply(string).isEmpty();
         return createCheck(property, severity, decorated, messageCreator == null ? alternativeMessageCreator : messageCreator, instanceCheck);
     }
 
@@ -205,7 +205,7 @@ public class DefaultChecks {
      */
     public Check createIsNumberWithinBoundsCheck(StringProperty property, Severity severity, Node decorated, double minimum, double maximum) {
         Function<String, Optional<Double>> isNumberWithinBoundsCheck = string -> Optional.ofNullable(asNumber(string)).filter(d -> d >= minimum && d <= maximum);
-        Function<String, String> messageCreator = string -> String.format("%s[%s] is not between %f and %f", property.getName(), isNumberWithinBoundsCheck.apply(string).map(String::valueOf).orElse("NAN"), minimum, maximum);
+        Function<String, String> messageCreator = string -> String.format("%s[%s] is not between %f and %f", property.getName(), Optional.ofNullable(asNumber(string)).map(String::valueOf).orElse("NAN"), minimum, maximum);
         return createIsAssignableToCheck(property, severity, decorated, isNumberWithinBoundsCheck, messageCreator);
     }
 
@@ -232,8 +232,8 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public Check matchesRegexCheck(StringProperty property, Severity severity, Node decorated, String regex) {
-        Function<String, String> messageCreator = string -> String.format("%s[%s] does not match the regex %s", property.getName(), string, regex);
-        Predicate<String> matchCheck = string -> string.matches(regex);
+        Function<String, String> messageCreator = string -> String.format("%s['%s'] does not match the regex %s", property.getName(), string, regex);
+        Predicate<String> matchCheck = string -> !string.matches(regex);
         return createCheck(property, severity, decorated, messageCreator, matchCheck);
     }
 
@@ -260,7 +260,7 @@ public class DefaultChecks {
         }
     }
 
-    private <T> Check createCheck(Property<T> property, Severity severity, Node decorated, Function<T, String> messageCreator, Predicate<T> shouldActivate) {
+    private <T> Check createCheck(ReadOnlyProperty<T> property, Severity severity, Node decorated, Function<T, String> messageCreator, Predicate<T> shouldActivate) {
         Check check = validator.createCheck();
         String key = UUID.randomUUID().toString();
         check.dependsOn(key, property)
