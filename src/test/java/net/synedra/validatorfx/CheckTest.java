@@ -197,5 +197,65 @@ class CheckTest {
 		WaitForAsyncUtils.waitForFxEvents();
 		checkMessage(c, Severity.WARNING, "warn");
 	}
+
+	@Test
+	void testAllMatch(FxRobot robot) {
+		Check c = new Check()
+				.dependsOn("content", textfield.textProperty())
+				.dependsOn("width", textfield.widthProperty())
+				.allMatch(Severity.WARNING, "warn", Objects::nonNull).immediate();
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait
+		assertEquals(0, c.getValidationResult().getMessages().size());
+
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 4);
+		checkNoMessage(c);
+	}
+
+	@Test
+	void testAllMustBeTrue() {
+		Check c = new Check()
+				.dependsOn("visible", textfield.visibleProperty())
+				.dependsOn("disabled", textfield.disabledProperty())
+				.allMustBeTrue(Severity.WARNING, "warn").immediate();
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait
+		checkMessage(c, Severity.WARNING, "warn");
+		textfield.setVisible(true);
+		textfield.setDisable(true);
+		WaitForAsyncUtils.waitForFxEvents();
+		checkNoMessage(c);
+	}
+
+	@Test
+	void testNoneMatch(FxRobot robot) {
+		Check c = new Check()
+				.dependsOn("content", textfield.textProperty())
+				.dependsOn("width", textfield.widthProperty())
+				.noneMatch(Severity.WARNING, "warn", Objects::nonNull).immediate();
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait
+		assertEquals(1, c.getValidationResult().getMessages().size());
+
+		robot.clickOn(".text-field");
+		robot.type(KeyCode.A, 4);
+		checkMessage(c, Severity.WARNING, "warn");
+	}
+
+	@Test
+	void testNoneMustBeTrue() {
+		Check c = new Check()
+				.dependsOn("visible", textfield.visibleProperty())
+				.dependsOn("disabled", textfield.disabledProperty())
+				.noneMustBeTrue(Severity.WARNING, "warn").immediate();
+		WaitForAsyncUtils.waitForFxEvents(); // .immediate() will call the initial update delayed, so we have to wait
+		checkMessage(c, Severity.WARNING, "warn");
+		textfield.setVisible(true);
+		textfield.setDisable(true);
+		WaitForAsyncUtils.waitForFxEvents();
+		checkMessage(c, Severity.WARNING, "warn");
+		textfield.setVisible(false);
+		textfield.setDisable(false);
+		WaitForAsyncUtils.waitForFxEvents();
+		checkNoMessage(c);
+	}
 	
 }
