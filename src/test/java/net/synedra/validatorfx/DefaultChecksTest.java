@@ -38,7 +38,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateNonNullCheck() {
         ComboBox<String> comboBox = new ComboBox<>(FXCollections.observableList(List.of("Test1", "Test2", "Test3")));
         Validator validator = new Validator();
-        validator.defaultChecks().createNonNullCheck(comboBox.getSelectionModel().selectedItemProperty(), Severity.ERROR).explicit();
+        validator.defaultChecks().createNonNullCheck(comboBox.getSelectionModel().selectedItemProperty(), "selectedItem", Severity.ERROR).explicit();
         validator.validate();
         checkMessage(validator, "selectedItem mustn't be null");
         comboBox.getSelectionModel().select(0);
@@ -50,7 +50,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateNonBlankCheck() {
         TextField textfield = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createNonBlankCheck(textfield.textProperty(), Severity.ERROR).explicit();
+        validator.defaultChecks().createNonBlankCheck(textfield.textProperty(), "text", Severity.ERROR).explicit();
         validator.validate();
         checkMessage(validator, "text is required to not be blank");
         textfield.setText("Test");
@@ -62,7 +62,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateMinimumLengthCheck() {
         TextField textfield = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createMinimumLengthCheck(textfield.textProperty(), Severity.ERROR, 3).explicit();
+        validator.defaultChecks().createMinimumLengthCheck(textfield.textProperty(), "text", Severity.ERROR, 3).explicit();
         validator.validate();
         checkMessage(validator, "text with value of [''] should be at least 3 characters long");
         textfield.setText("Test");
@@ -74,7 +74,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateMaximumLengthCheck() {
         TextField textfield = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createMaximumLengthCheck(textfield.textProperty(), Severity.ERROR, 3).explicit();
+        validator.defaultChecks().createMaximumLengthCheck(textfield.textProperty(), "text", Severity.ERROR, 3).explicit();
         validator.validate();
         checkNoMessages(validator);
         textfield.setText("Test");
@@ -83,10 +83,10 @@ public class DefaultChecksTest extends TestBase {
     }
 
     @Test
-    void testCreateIsAssignableToCheck() {
+    void testCreateIsMappableToCheck() {
         TextField textField = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createIsAssignableToCheck(textField.textProperty(), Severity.ERROR, string -> {
+        validator.defaultChecks().createIsMappableToCheck(textField.textProperty(), "text", Severity.ERROR, string -> {
             try {
                 return Optional.of(Integer.parseInt(string));
             } catch (NumberFormatException e) {
@@ -104,7 +104,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateIsNumberCheck() {
         TextField textField = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createIsNumberCheck(textField.textProperty(), Severity.ERROR).explicit();
+        validator.defaultChecks().createIsNumberCheck(textField.textProperty(), "text", Severity.ERROR).explicit();
         validator.validate();
         checkMessage(validator, "text is not a number");
         textField.setText("Test");
@@ -119,7 +119,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateIsNumberWithinBoundsCheck() {
         TextField textField = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createIsNumberWithinBoundsCheck(textField.textProperty(), Severity.ERROR, 12.0, 20.0).explicit();
+        validator.defaultChecks().createIsNumberWithinBoundsCheck(textField.textProperty(), "text", Severity.ERROR, 12.0, 20.0).explicit();
         validator.validate();
         checkMessage(validator, "text['NAN'] is not between 12.00 and 20.00");
         textField.setText("Test");
@@ -143,7 +143,7 @@ public class DefaultChecksTest extends TestBase {
     void testCreateMatchesRegexCheck() {
         TextField textField = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createMatchesRegexCheck(textField.textProperty(), Severity.ERROR, "[abc]{2}").explicit();
+        validator.defaultChecks().createMatchesRegexCheck(textField.textProperty(), "text", Severity.ERROR, "[abc]{2}").explicit();
         validator.validate();
         checkMessage(validator, "text[''] does not match the regex ['[abc]{2}']");
         textField.setText("Test");

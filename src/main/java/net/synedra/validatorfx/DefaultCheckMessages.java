@@ -1,14 +1,13 @@
 package net.synedra.validatorfx;
 
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 
 import java.util.Objects;
 import java.util.function.Function;
 
 public interface DefaultCheckMessages {
     /**
-     * Will be called when a {@link DefaultChecks#createNonNullCheck(ReadOnlyProperty, Severity)} fails
+     * Will be called when a {@link DefaultChecks#createNonNullCheck(ObservableValue, String, Severity)} fails
      * @return the message that will be attached to the validation result
      */
     default String notNullMessage(String fieldName) {
@@ -16,7 +15,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createNonBlankCheck(StringProperty, Severity)} fails
+     * Will be called when a {@link DefaultChecks#createNonBlankCheck(ObservableValue, String, Severity)} fails
      * @return the message that will be attached to the validation result
      */
     default String notBlankMessage(String fieldName) {
@@ -24,7 +23,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createMinimumLengthCheck(StringProperty, Severity, int)} fails
+     * Will be called when a {@link DefaultChecks#createMinimumLengthCheck(ObservableValue, String, Severity, int)} fails
      * @return the message that will be attached to the validation result
      */
     default String minimumLengthMessage(String fieldName, String currentValue, int minimumLength) {
@@ -32,7 +31,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createMaximumLengthCheck(StringProperty, Severity, int)} fails
+     * Will be called when a {@link DefaultChecks#createMaximumLengthCheck(ObservableValue, String, Severity, int)} fails
      * @return the message that will be attached to the validation result
      */
     default String maximumLengthMessage(String fieldName, String currentValue, int maximumLength) {
@@ -40,7 +39,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createIsAssignableToCheck(StringProperty, Severity, Function)} fails
+     * Will be called when a {@link DefaultChecks#createIsMappableToCheck(ObservableValue, String, Severity, Function)} fails
      * @return the message that will be attached to the validation result
      */
     default String isAssignableMessage(String fieldName) {
@@ -48,7 +47,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createIsNumberCheck(StringProperty, Severity)} fails
+     * Will be called when a {@link DefaultChecks#createIsNumberCheck(ObservableValue, String, Severity)} fails
      * @return the message that will be attached to the validation result
      */
     default String isNumberMessage(String fieldName) {
@@ -56,7 +55,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createIsNumberWithinBoundsCheck(StringProperty, Severity, double, double)} fails
+     * Will be called when a {@link DefaultChecks#createIsNumberWithinBoundsCheck(ObservableValue, String, Severity, double, double)} fails
      * @return the message that will be attached to the validation result
      */
     default String isNumberWithinBoundsMessage(String fieldName, String currentValue, double minimum, double maximum) {
@@ -64,7 +63,7 @@ public interface DefaultCheckMessages {
     }
 
     /**
-     * Will be called when a {@link DefaultChecks#createMatchesRegexCheck(StringProperty, Severity, String)} fails
+     * Will be called when a {@link DefaultChecks#createMatchesRegexCheck(ObservableValue, String, Severity, String)} fails
      * @return the message that will be attached to the validation result
      */
     default String matchesRegexMessage(String fieldName, String currentValue, String regex) {

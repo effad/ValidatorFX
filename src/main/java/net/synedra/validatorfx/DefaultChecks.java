@@ -1,8 +1,6 @@
 package net.synedra.validatorfx;
 
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.StringProperty;
-import javafx.scene.Node;
+import javafx.beans.value.ObservableValue;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -27,26 +25,13 @@ public class DefaultChecks {
      *
      * @param property  whose value shouldn't be null
      * @param severity  of the validation
-     * @param decorated the node that should be decorated by this check
      * @param <T>       of the passed property
      * @return self for methodChaining
      */
-    public <T> Check createNonNullCheck(ReadOnlyProperty<T> property, Severity severity, Node decorated) {
-        Function<T, String> messageCreator = t -> getDefaultCheckMessagesFactory().notNullMessage(property.getName());
+    public <T> Check createNonNullCheck(ObservableValue<T> property, String fieldName, Severity severity) {
+        Function<T, String> messageCreator = t -> getDefaultCheckMessagesFactory().notNullMessage(fieldName);
         Predicate<T> notNull = Objects::isNull;
-        return createCheck(property, severity, decorated, messageCreator, notNull);
-    }
-
-    /**
-     * Create a check that fails validation when the value of the passed property is null
-     *
-     * @param property whose value shouldn't be null
-     * @param severity of the validation
-     * @param <T>      of the passed property
-     * @return self for methodChaining
-     */
-    public <T> Check createNonNullCheck(ReadOnlyProperty<T> property, Severity severity) {
-        return createNonNullCheck(property, severity, null);
+        return createCheck(property, severity, messageCreator, notNull);
     }
 
     /**
@@ -54,24 +39,12 @@ public class DefaultChecks {
      *
      * @param property  whose value shouldn't be blank
      * @param severity  of the validation
-     * @param decorated the node that should be decorated by this check
      * @return self for methodChaining
      */
-    public Check createNonBlankCheck(StringProperty property, Severity severity, Node decorated) {
-        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().notBlankMessage(property.getName());
+    public Check createNonBlankCheck(ObservableValue<String> property, String fieldName, Severity severity) {
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().notBlankMessage(fieldName);
         Predicate<String> isBlank = String::isBlank;
-        return createCheck(property, severity, decorated, messageCreator, isBlank);
-    }
-
-    /**
-     * Create a check that fails validation when the string-value of the passed property is blank
-     *
-     * @param property whose value shouldn't be blank
-     * @param severity of the validation
-     * @return self for methodChaining
-     */
-    public Check createNonBlankCheck(StringProperty property, Severity severity) {
-        return createNonBlankCheck(property, severity, null);
+        return createCheck(property, severity, messageCreator, isBlank);
     }
 
     /**
@@ -79,26 +52,13 @@ public class DefaultChecks {
      *
      * @param property      whose value shouldn't be shorter than the minimum length
      * @param severity      of the validation
-     * @param decorated     the node that should be decorated by this check
      * @param minimumLength the required minimum length of the string
      * @return self for methodChaining
      */
-    public Check createMinimumLengthCheck(StringProperty property, Severity severity, Node decorated, int minimumLength) {
-        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().minimumLengthMessage(property.getName(), property.get(), minimumLength);
+    public Check createMinimumLengthCheck(ObservableValue<String> property, String fieldName, Severity severity, int minimumLength) {
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().minimumLengthMessage(fieldName, property.getValue(), minimumLength);
         Predicate<String> lengthCheck = string -> string != null && string.length() < minimumLength;
-        return createCheck(property, severity, decorated, messageCreator, lengthCheck);
-    }
-
-    /**
-     * Create a check that fails validation when the string-value of the passed property is shorter than the required minimum length
-     *
-     * @param property      whose value shouldn't be shorter than the minimum length
-     * @param severity      of the validation
-     * @param minimumLength the required minimum length of the string
-     * @return self for methodChaining
-     */
-    public Check createMinimumLengthCheck(StringProperty property, Severity severity, int minimumLength) {
-        return createMinimumLengthCheck(property, severity, null, minimumLength);
+        return createCheck(property, severity, messageCreator, lengthCheck);
     }
 
     /**
@@ -106,26 +66,13 @@ public class DefaultChecks {
      *
      * @param property      whose value shouldn't be longer than the maximum length
      * @param severity      of the validation
-     * @param decorated     the node that should be decorated by this check
      * @param maximumLength the required maximum length of the string
      * @return self for methodChaining
      */
-    public Check createMaximumLengthCheck(StringProperty property, Severity severity, Node decorated, int maximumLength) {
-        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().maximumLengthMessage(property.getName(), property.get(), maximumLength);
+    public Check createMaximumLengthCheck(ObservableValue<String> property, String fieldName, Severity severity, int maximumLength) {
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().maximumLengthMessage(fieldName, property.getValue(), maximumLength);
         Predicate<String> lengthCheck = string -> string != null && string.length() > maximumLength;
-        return createCheck(property, severity, decorated, messageCreator, lengthCheck);
-    }
-
-    /**
-     * Create a check that fails validation when the string-value of the passed property is longer than the required maximum length
-     *
-     * @param property      whose value shouldn't be longer than the maximum length
-     * @param severity      of the validation
-     * @param maximumLength the required maximum length of the string
-     * @return self for methodChaining
-     */
-    public Check createMaximumLengthCheck(StringProperty property, Severity severity, int maximumLength) {
-        return createMaximumLengthCheck(property, severity, null, maximumLength);
+        return createCheck(property, severity, messageCreator, lengthCheck);
     }
 
     /**
@@ -133,30 +80,15 @@ public class DefaultChecks {
      *
      * @param property       whose value should be assigned to t
      * @param severity       of the validation
-     * @param decorated      the node that should be decorated by this check
      * @param mapper         the function that assigns a string value to an Optional<T>
      * @param messageCreator the function that provides the message for a failed validation
      * @param <T>            type to assign the value of property to
      * @return self for methodChaining
      */
-    public <T> Check createIsAssignableToCheck(StringProperty property, Severity severity, Node decorated, Function<String, Optional<T>> mapper, Function<String, String> messageCreator) {
-        Function<String, String> alternativeMessageCreator = string -> getDefaultCheckMessagesFactory().isAssignableMessage(property.getName());
+    public <T> Check createIsMappableToCheck(ObservableValue<String> property, String fieldName, Severity severity, Function<String, Optional<T>> mapper, Function<String, String> messageCreator) {
+        Function<String, String> alternativeMessageCreator = string -> getDefaultCheckMessagesFactory().isAssignableMessage(fieldName);
         Predicate<String> instanceCheck = string -> mapper.apply(string).isEmpty();
-        return createCheck(property, severity, decorated, messageCreator == null ? alternativeMessageCreator : messageCreator, instanceCheck);
-    }
-
-    /**
-     * Create a check that fails validation when the string-value of the passed property cannot be assigned to a value of T
-     *
-     * @param property       whose value should be assigned to t
-     * @param severity       of the validation
-     * @param mapper         the function that assigns a string value to an Optional<T>
-     * @param messageCreator the function that provides the message for a failed validation
-     * @param <T>            type to assign the value of property to
-     * @return self for methodChaining
-     */
-    public <T> Check createIsAssignableToCheck(StringProperty property, Severity severity, Function<String, Optional<T>> mapper, Function<String, String> messageCreator) {
-        return createIsAssignableToCheck(property, severity, null, mapper, messageCreator);
+        return createCheck(property, severity, messageCreator == null ? alternativeMessageCreator : messageCreator, instanceCheck);
     }
 
     /**
@@ -169,8 +101,8 @@ public class DefaultChecks {
      * @param <T>      type to assign the value of property to
      * @return self for methodChaining
      */
-    public <T> Check createIsAssignableToCheck(StringProperty property, Severity severity, Function<String, Optional<T>> mapper) {
-        return createIsAssignableToCheck(property, severity, mapper, null);
+    public <T> Check createIsMappableToCheck(ObservableValue<String> property, String fieldName, Severity severity, Function<String, Optional<T>> mapper) {
+        return createIsMappableToCheck(property, fieldName, severity, mapper, null);
     }
 
     /**
@@ -178,24 +110,12 @@ public class DefaultChecks {
      *
      * @param property  whose value should be cast to a number
      * @param severity  of the validation
-     * @param decorated the node that should be decorated by this check
      * @return self for methodChaining
      */
-    public Check createIsNumberCheck(StringProperty property, Severity severity, Node decorated) {
-        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().isNumberMessage(property.getName());
+    public Check createIsNumberCheck(ObservableValue<String> property, String fieldName, Severity severity) {
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().isNumberMessage(fieldName);
         Function<String, Optional<Double>> isNumberCheck = string -> Optional.ofNullable(asNumber(string));
-        return createIsAssignableToCheck(property, severity, decorated, isNumberCheck, messageCreator);
-    }
-
-    /**
-     * Create a check that fails validation when the string value of the passed property cannot be cast to a number.
-     *
-     * @param property whose value should be cast to a number
-     * @param severity of the validation
-     * @return self for methodChaining
-     */
-    public Check createIsNumberCheck(StringProperty property, Severity severity) {
-        return createIsNumberCheck(property, severity, null);
+        return createIsMappableToCheck(property, fieldName, severity, isNumberCheck, messageCreator);
     }
 
     /**
@@ -203,28 +123,14 @@ public class DefaultChecks {
      *
      * @param property  whose value should be between the bounds
      * @param severity  of the validation
-     * @param decorated the node that should be decorated by this check
      * @param minimum   the lower bound of the validation (inclusive)
      * @param maximum   the upper bound of the validation (inclusive)
      * @return self for methodChaining
      */
-    public Check createIsNumberWithinBoundsCheck(StringProperty property, Severity severity, Node decorated, double minimum, double maximum) {
+    public Check createIsNumberWithinBoundsCheck(ObservableValue<String> property, String fieldName, Severity severity, double minimum, double maximum) {
         Function<String, Optional<Double>> isNumberWithinBoundsCheck = string -> Optional.ofNullable(asNumber(string)).filter(d -> d >= minimum && d <= maximum);
-        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().isNumberWithinBoundsMessage(property.getName(), Optional.ofNullable(asNumber(string)).map(String::valueOf).orElse("NAN"), minimum, maximum);
-        return createIsAssignableToCheck(property, severity, decorated, isNumberWithinBoundsCheck, messageCreator);
-    }
-
-    /**
-     * Create a check that fails validation when the number value of the passed property is not between two bounds.
-     *
-     * @param property whose value should be between the bounds
-     * @param severity of the validation
-     * @param minimum  the lower bound of the validation (inclusive)
-     * @param maximum  the upper bound of the validation (inclusive)
-     * @return self for methodChaining
-     */
-    public Check createIsNumberWithinBoundsCheck(StringProperty property, Severity severity, double minimum, double maximum) {
-        return createIsNumberWithinBoundsCheck(property, severity, null, minimum, maximum);
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().isNumberWithinBoundsMessage(fieldName, Optional.ofNullable(asNumber(string)).map(String::valueOf).orElse("NAN"), minimum, maximum);
+        return createIsMappableToCheck(property, fieldName, severity, isNumberWithinBoundsCheck, messageCreator);
     }
 
     /**
@@ -232,26 +138,13 @@ public class DefaultChecks {
      *
      * @param property  whose value should match the regex
      * @param severity  of the validation
-     * @param decorated the node that should be decorated by this check
      * @param regex     that the property-value should match
      * @return self for methodChaining
      */
-    public Check createMatchesRegexCheck(StringProperty property, Severity severity, Node decorated, String regex) {
-        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().matchesRegexMessage(property.getName(), string, regex);
+    public Check createMatchesRegexCheck(ObservableValue<String> property, String fieldName, Severity severity, String regex) {
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().matchesRegexMessage(fieldName, string, regex);
         Predicate<String> matchCheck = string -> !string.matches(regex);
-        return createCheck(property, severity, decorated, messageCreator, matchCheck);
-    }
-
-    /**
-     * Create a check that fails validation when the string value of the passed property does not match a regex.
-     *
-     * @param property whose value should match the regex
-     * @param severity of the validation
-     * @param regex    that the property-value should match
-     * @return self for methodChaining
-     */
-    public Check createMatchesRegexCheck(StringProperty property, Severity severity, String regex) {
-        return createMatchesRegexCheck(property, severity, null, regex);
+        return createCheck(property, severity, messageCreator, matchCheck);
     }
 
     private Double asNumber(String string) {
@@ -265,14 +158,11 @@ public class DefaultChecks {
         }
     }
 
-    private <T> Check createCheck(ReadOnlyProperty<T> property, Severity severity, Node decorated, Function<T, String> messageCreator, Predicate<T> shouldActivate) {
+    private <T> Check createCheck(ObservableValue<T> value, Severity severity, Function<T, String> messageCreator, Predicate<T> shouldActivate) {
         Check check = validator.createCheck();
         String key = UUID.randomUUID().toString();
-        check.dependsOn(key, property)
+        check.dependsOn(key, value)
                 .withMethod(context -> validateWithContext(key, severity, context, messageCreator, shouldActivate));
-        if (decorated != null) {
-            check.decorates(decorated);
-        }
         return check;
     }
 
