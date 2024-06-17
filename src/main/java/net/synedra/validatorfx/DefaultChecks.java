@@ -10,6 +10,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static net.synedra.validatorfx.DefaultCheckMessages.CurrentCheckMessagesFactory.getDefaultCheckMessagesFactory;
+
+/**
+ * Default checks available to setup standard validation methods easily. The messages for failed validation will be created by calling the respective methods in {@link DefaultCheckMessages}
+ */
 public class DefaultChecks {
     private final Validator validator;
 
@@ -27,7 +32,7 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public <T> Check createNonNullCheck(ReadOnlyProperty<T> property, Severity severity, Node decorated) {
-        Function<T, String> messageCreator = t -> String.format("%s mustn't be null", property.getName());
+        Function<T, String> messageCreator = t -> getDefaultCheckMessagesFactory().notNullMessage(property.getName());
         Predicate<T> notNull = Objects::isNull;
         return createCheck(property, severity, decorated, messageCreator, notNull);
     }
@@ -53,7 +58,7 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public Check createNonBlankCheck(StringProperty property, Severity severity, Node decorated) {
-        Function<String, String> messageCreator = string -> String.format("%s is required to not be blank", property.getName());
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().notBlankMessage(property.getName());
         Predicate<String> isBlank = String::isBlank;
         return createCheck(property, severity, decorated, messageCreator, isBlank);
     }
@@ -79,7 +84,7 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public Check createMinimumLengthCheck(StringProperty property, Severity severity, Node decorated, int minimumLength) {
-        Function<String, String> messageCreator = string -> String.format("%s with value of %s should be at least %d characters long", property.getName(), property.get(), minimumLength);
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().minimumLengthMessage(property.getName(), property.get(), minimumLength);
         Predicate<String> lengthCheck = string -> string != null && string.length() < minimumLength;
         return createCheck(property, severity, decorated, messageCreator, lengthCheck);
     }
@@ -106,7 +111,7 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public Check createMaximumLengthCheck(StringProperty property, Severity severity, Node decorated, int maximumLength) {
-        Function<String, String> messageCreator = string -> String.format("%s with value of %s should be at most %d characters long", property.getName(), property.get(), maximumLength);
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().maximumLengthMessage(property.getName(), property.get(), maximumLength);
         Predicate<String> lengthCheck = string -> string != null && string.length() > maximumLength;
         return createCheck(property, severity, decorated, messageCreator, lengthCheck);
     }
@@ -135,7 +140,7 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public <T> Check createIsAssignableToCheck(StringProperty property, Severity severity, Node decorated, Function<String, Optional<T>> mapper, Function<String, String> messageCreator) {
-        Function<String, String> alternativeMessageCreator = string -> String.format("%s is not assignable", property.getName());
+        Function<String, String> alternativeMessageCreator = string -> getDefaultCheckMessagesFactory().isAssignableMessage(property.getName());
         Predicate<String> instanceCheck = string -> mapper.apply(string).isEmpty();
         return createCheck(property, severity, decorated, messageCreator == null ? alternativeMessageCreator : messageCreator, instanceCheck);
     }
@@ -177,7 +182,7 @@ public class DefaultChecks {
      * @return self for methodChaining
      */
     public Check createIsNumberCheck(StringProperty property, Severity severity, Node decorated) {
-        Function<String, String> messageCreator = string -> String.format("%s isn't a number", property.getName());
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().isNumberMessage(property.getName());
         Function<String, Optional<Double>> isNumberCheck = string -> Optional.ofNullable(asNumber(string));
         return createIsAssignableToCheck(property, severity, decorated, isNumberCheck, messageCreator);
     }
@@ -205,7 +210,7 @@ public class DefaultChecks {
      */
     public Check createIsNumberWithinBoundsCheck(StringProperty property, Severity severity, Node decorated, double minimum, double maximum) {
         Function<String, Optional<Double>> isNumberWithinBoundsCheck = string -> Optional.ofNullable(asNumber(string)).filter(d -> d >= minimum && d <= maximum);
-        Function<String, String> messageCreator = string -> String.format("%s[%s] is not between %f and %f", property.getName(), Optional.ofNullable(asNumber(string)).map(String::valueOf).orElse("NAN"), minimum, maximum);
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().isNumberWithinBoundsMessage(property.getName(), Optional.ofNullable(asNumber(string)).map(String::valueOf).orElse("NAN"), minimum, maximum);
         return createIsAssignableToCheck(property, severity, decorated, isNumberWithinBoundsCheck, messageCreator);
     }
 
@@ -231,8 +236,8 @@ public class DefaultChecks {
      * @param regex     that the property-value should match
      * @return self for methodChaining
      */
-    public Check matchesRegexCheck(StringProperty property, Severity severity, Node decorated, String regex) {
-        Function<String, String> messageCreator = string -> String.format("%s['%s'] does not match the regex %s", property.getName(), string, regex);
+    public Check createMatchesRegexCheck(StringProperty property, Severity severity, Node decorated, String regex) {
+        Function<String, String> messageCreator = string -> getDefaultCheckMessagesFactory().matchesRegexMessage(property.getName(), string, regex);
         Predicate<String> matchCheck = string -> !string.matches(regex);
         return createCheck(property, severity, decorated, messageCreator, matchCheck);
     }
@@ -245,8 +250,8 @@ public class DefaultChecks {
      * @param regex    that the property-value should match
      * @return self for methodChaining
      */
-    public Check matchesRegexCheck(StringProperty property, Severity severity, String regex) {
-        return matchesRegexCheck(property, severity, null, regex);
+    public Check createMatchesRegexCheck(StringProperty property, Severity severity, String regex) {
+        return createMatchesRegexCheck(property, severity, null, regex);
     }
 
     private Double asNumber(String string) {

@@ -64,7 +64,7 @@ public class DefaultChecksTest extends TestBase {
         Validator validator = new Validator();
         validator.defaultChecks().createMinimumLengthCheck(textfield.textProperty(), Severity.ERROR, 3).explicit();
         validator.validate();
-        checkMessage(validator, "text with value of  should be at least 3 characters long");
+        checkMessage(validator, "text with value of [''] should be at least 3 characters long");
         textfield.setText("Test");
         validator.validate();
         checkNoMessages(validator);
@@ -79,7 +79,7 @@ public class DefaultChecksTest extends TestBase {
         checkNoMessages(validator);
         textfield.setText("Test");
         validator.validate();
-        checkMessage(validator, "text with value of Test should be at most 3 characters long");
+        checkMessage(validator, "text with value of ['Test'] should be at most 3 characters long");
     }
 
     @Test
@@ -106,10 +106,10 @@ public class DefaultChecksTest extends TestBase {
         Validator validator = new Validator();
         validator.defaultChecks().createIsNumberCheck(textField.textProperty(), Severity.ERROR).explicit();
         validator.validate();
-        checkMessage(validator, "text isn't a number");
+        checkMessage(validator, "text is not a number");
         textField.setText("Test");
         validator.validate();
-        checkMessage(validator, "text isn't a number");
+        checkMessage(validator, "text is not a number");
         textField.setText("12.1");
         validator.validate();
         checkNoMessages(validator);
@@ -119,12 +119,12 @@ public class DefaultChecksTest extends TestBase {
     void testCreateIsNumberWithinBoundsCheck() {
         TextField textField = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().createIsNumberWithinBoundsCheck(textField.textProperty(), Severity.ERROR, 12, 20).explicit();
+        validator.defaultChecks().createIsNumberWithinBoundsCheck(textField.textProperty(), Severity.ERROR, 12.0, 20.0).explicit();
         validator.validate();
-        checkMessage(validator, "text[NAN] is not between 12.000000 and 20.000000");
+        checkMessage(validator, "text['NAN'] is not between 12.00 and 20.00");
         textField.setText("Test");
         validator.validate();
-        checkMessage(validator, "text[NAN] is not between 12.000000 and 20.000000");
+        checkMessage(validator, "text['NAN'] is not between 12.00 and 20.00");
         textField.setText("12.1");
         validator.validate();
         checkNoMessages(validator);
@@ -133,22 +133,22 @@ public class DefaultChecksTest extends TestBase {
         checkNoMessages(validator);
         textField.setText("10");
         validator.validate();
-        checkMessage(validator, "text[10.0] is not between 12.000000 and 20.000000");
+        checkMessage(validator, "text['10.0'] is not between 12.00 and 20.00");
         textField.setText("22");
         validator.validate();
-        checkMessage(validator, "text[22.0] is not between 12.000000 and 20.000000");
+        checkMessage(validator, "text['22.0'] is not between 12.00 and 20.00");
     }
 
     @Test
     void testCreateMatchesRegexCheck() {
         TextField textField = new TextField();
         Validator validator = new Validator();
-        validator.defaultChecks().matchesRegexCheck(textField.textProperty(), Severity.ERROR, "[abc]{2}").explicit();
+        validator.defaultChecks().createMatchesRegexCheck(textField.textProperty(), Severity.ERROR, "[abc]{2}").explicit();
         validator.validate();
-        checkMessage(validator, "text[''] does not match the regex [abc]{2}");
+        checkMessage(validator, "text[''] does not match the regex ['[abc]{2}']");
         textField.setText("Test");
         validator.validate();
-        checkMessage(validator, "text['Test'] does not match the regex [abc]{2}");
+        checkMessage(validator, "text['Test'] does not match the regex ['[abc]{2}']");
         textField.setText("ab");
         validator.validate();
         checkNoMessages(validator);
