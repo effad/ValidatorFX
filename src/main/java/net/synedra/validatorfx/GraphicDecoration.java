@@ -57,7 +57,12 @@ public class GraphicDecoration implements Decoration {
 		layoutListener = new WeakChangeListener<>((observable, oldValue, newValue) -> layoutGraphic());
 		transformListener = (observable, oldValue, newValue) -> layoutGraphic();
 	}
-	
+
+	/** Get node used to overlay the decorated node. */
+	public Node getDecorationNode() {
+		return decorationNode;
+	}
+
 	/** Manually trigger an update for decorations in scene.
 	 *  
 	 * You should not need to call this method, because ValidatorFX should detect the need to update graphic validations.

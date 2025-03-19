@@ -44,11 +44,11 @@ public class DefaultDecoration {
 		DefaultDecoration.factory = factory;
 	}
 
-	public static Decoration createStyleClassDecoration(ValidationMessage message) {
+	public static StyleClassDecoration createStyleClassDecoration(ValidationMessage message) {
 		return new StyleClassDecoration("validatorfx-" + message.getSeverity().toString().toLowerCase());
 	}
 
-	public static Decoration createGraphicDecoration(ValidationMessage message) {
+	public static GraphicDecoration createGraphicDecoration(ValidationMessage message) {
 		return new GraphicDecoration(createDecorationNode(message),Pos.TOP_LEFT);
 	}
 
