@@ -51,7 +51,8 @@ public class Validator {
 			check.validationResultProperty().removeListener(listener);
 		}
 		refreshProperties();
-	}	
+		check.clear();
+	}
 		
 	/** Retrieves current validation result
 	 * @return validation result
