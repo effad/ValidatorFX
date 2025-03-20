@@ -21,7 +21,7 @@ The central class of ValidatorFX is `Validator` which contains a number of `Chec
 <dependency>
    <groupId>net.synedra</groupId>
    <artifactId>validatorfx</artifactId>
-   <version>0.5.1</version>
+   <version>0.6.0</version>
 </dependency>
 ```
 
