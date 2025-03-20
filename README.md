@@ -60,7 +60,6 @@ Here is a minimal complete example of how ValidatorFX is used:
           })
           .decorates(userTextField)
           .immediate();
-        ;
 
         GridPane grid = createGrid();
         grid.add(userTextField, 1, 1);
@@ -106,7 +105,7 @@ A dependency named `username` is declared here. You can call dependsOn multiple 
       })
 ```
 
-This defines the check to be executed. Note how the dependency declared above can easily be accessed here (of course we could also have used `userTextField.getText()` instead of `c.get("username")` here.
+This defines the check to be executed. Note how the dependency declared above can easily be accessed here (of course we could also have used `userTextField.getText()` instead of `c.get("username")` here).
 Since ValidatorFX-0.5.0 you may also call withMethod multiple times thus installing multiple checks to be executed. All given check methods will be executed (i.e. no short circuit evaluation).
 
 ```java
@@ -120,17 +119,57 @@ This line tells ValidatorFX to decorate the text field itself. You can call deco
 ```
 
 The check is declared immediate by this line which means it will be evaluated constantly and `userTextField` will be decorated as soon as the check condition changes. Without this line you can validate on submit.
-You may also want to use explicit validation (i.e. a call to `Validator.validate()`)) at first and then switch to immediate mode or use `immediateClear()` which will immediately clear validation / decoration when the user gives input. 
+You may also want to use explicit validation (i.e. a call to `Validator.validate()`) at first and then switch to immediate mode or use `immediateClear()` which will immediately clear validation / decoration when the user gives input. 
 
 Here's a screenshot of the example in action:
 
 ![Screenshot of MinimalExample](images/MinimalDemo.png)
 
-To see more features and Details have a look at [ValidatorFXDemo.java](src/test/java/net/synedra/validatorfx/demo/ValidatorFXDemo.java) and the other files in the demo folder.
+To see more features and details have a look at [ValidatorFXDemo.java](src/test/java/net/synedra/validatorfx/demo/ValidatorFXDemo.java) and the other files in the demo folder.
+
+## Providing custom decorations
+
+While ValidatorFX provides default decorations out of the box, it is possible to provide you own decorations. This can either be done on a per-Check-instance basis:
+```java
+    validator.createCheck()
+        ...
+        .decoratingWith(this::sumDecorator)
+        ...
+    ;
+...
+    private Decoration sumDecorator(ValidationMessage m) {
+        return new Decoration() {
+            @Override
+            public void remove(Node target) {
+                ((Label) target).setText("OK");
+            }
+    
+            @Override
+            public void add(Node target) {
+                ((Label) target).setText("ERR - " + m.getText());
+            }
+        };
+    }
+```
+
+or by providing a new default decoration factory using `DefaultDecoration.setFactory(...)`. This also allows to modify the default graphic decorations provided by ValidatorFX:
+```java
+...
+		DefaultDecoration.setFactory(this::createGraphicDecoration);
+...
+public GraphicDecoration createGraphicDecoration(ValidationMessage message) {
+    GraphicDecoration decoration = DefaultDecoration.createGraphicDecoration(message);
+    if (decoration.getDecorationNode() instanceof Label label && label.getTooltip() instanceof Tooltip tooltip) {
+        tooltip.setStyle(tooltip.getStyle() + "-fx-font-size: 20em");
+    }
+    return decoration;
+}
+```
 
 ## Disabling buttons with a tooltip
 
-In many cases a form will contain a submit button that should be disabled if form validation fails. It is important to tell the user about the reason for the button being disabled. This can be done by using a graphic decoration that will display a tooltip if hovered. However this is not very intuitive and the graphic decorations will usually be very small and thus difficult for the user to hover.
+In many cases a form will contain a submit button that should be disabled if form validation fails. It is important to tell the user about the reason for the button being disabled. This can be done by using a graphic decoration that will display a tooltip if hovered. 
+However, this is not very intuitive and the graphic decorations will usually be very small and thus difficult for the user to hover.
 
 Unfortunately disabled nodes cannot show tooltips in JavaFX due to [JDK-8090379](https://bugs.openjdk.java.net/browse/JDK-8090379).
 
