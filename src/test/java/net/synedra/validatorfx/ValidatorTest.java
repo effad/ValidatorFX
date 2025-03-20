@@ -76,12 +76,12 @@ class ValidatorTest extends TestBase {
 		assertTrue(validator.containsWarnings());
 		assertTrue(validator.containsErrors());
 		
-		validator.remove(c1);
+		fx(() -> validator.remove(c1));
 		checkMessage(validator, Severity.ERROR, "Txt cntns vwls");
 		assertFalse(validator.containsWarnings());
 		assertTrue(validator.containsErrors());
-		
-		validator.remove(c2);
+
+		fx(() -> validator.remove(c2));
 		assertEquals(0, validator.getValidationResult().getMessages().size());		
 		assertFalse(validator.containsWarnings());
 		assertFalse(validator.containsErrors());
