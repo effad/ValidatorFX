@@ -2,7 +2,6 @@ package net.synedra.validatorfx;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.Function;
 
@@ -29,16 +28,14 @@ class DefaultDecorationTest extends TestBase {
 	@Test
 	void testStyleClassDecoration() {
 		ValidationMessage message = new ValidationMessage(Severity.WARNING, "warning");
-		Decoration decoration = DefaultDecoration.createStyleClassDecoration(message);
+		StyleClassDecoration decoration = DefaultDecoration.createStyleClassDecoration(message);
 		assertNotNull(decoration);
-		assertTrue(decoration instanceof StyleClassDecoration);
 	}
 	
 	@Test
 	void testGraphicDecoration() {
 		ValidationMessage message = new ValidationMessage(Severity.WARNING, "warning");
-		Decoration decoration = DefaultDecoration.createGraphicDecoration(message);
+		GraphicDecoration decoration = DefaultDecoration.createGraphicDecoration(message);
 		assertNotNull(decoration);
-		assertTrue(decoration instanceof GraphicDecoration);
 	}
 }
