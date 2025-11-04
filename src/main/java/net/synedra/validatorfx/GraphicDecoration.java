@@ -22,6 +22,7 @@ public class GraphicDecoration implements Decoration {
     private final double yOffset;
 	
     private final ChangeListener<Boolean> layoutListener;
+    private final ChangeListener<Boolean> layoutInnerListener;
     private final ChangeListener<Transform> transformListener;
     
     private ChangeListener<Scene> sceneChangedListener;
@@ -54,7 +55,8 @@ public class GraphicDecoration implements Decoration {
 		this.pos = position;
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
-		layoutListener = new WeakChangeListener<>((observable, oldValue, newValue) -> layoutGraphic());
+		layoutInnerListener = (observable, oldValue, newValue) -> layoutGraphic();
+		layoutListener = new WeakChangeListener<>(layoutInnerListener);
 		transformListener = (observable, oldValue, newValue) -> layoutGraphic();
 	}
 
