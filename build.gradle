@@ -85,7 +85,7 @@ publishing {
 				url = 'https://github.com/effad/ValidatorFX'
 				licenses {
 					license {
-						name = 'BSD 3-Clause License'
+						name = 'Apache License, Version 2.0'
 						url = 'https://raw.githubusercontent.com/effad/ValidatorFX/master/LICENSE'
 					}
 				}
